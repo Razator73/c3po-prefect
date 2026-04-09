@@ -22,6 +22,10 @@ jobs:
         run: |
           echo "=== WireGuard status ==="
           sudo wg show
+          echo "=== wg0 interface IP ==="
+          ip addr show wg0
+          echo "=== Routing table ==="
+          ip route show table main | grep 192.168
           echo "=== Ping fleet-command ==="
           ping -c 4 192.168.1.125 || echo "Ping failed (ICMP may be filtered)"
 
