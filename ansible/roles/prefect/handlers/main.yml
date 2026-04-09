@@ -1,0 +1,9 @@
+---
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Restart prefect-server
+  ansible.builtin.systemd:
+    name: prefect-server
+    state: restarted

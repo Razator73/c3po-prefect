@@ -1,0 +1,83 @@
+---
+- name: Install qemu-guest-agent
+  ansible.builtin.apt:
+    name: qemu-guest-agent
+    state: present
+    update_cache: true
+
+- name: Enable and start qemu-guest-agent
+  ansible.builtin.systemd:
+    name: qemu-guest-agent
+    enabled: true
+    state: started
+
+- name: Fetch authorized keys from key server
+  ansible.builtin.uri:
+    url: http://192.168.1.124/pub-keys
+    return_content: true
+  register: pub_keys
+
+- name: Set authorized keys for {{ ansible_user }}
+  ansible.posix.authorized_key:
+    user: "{{ ansible_user }}"
+    key: "{{ pub_keys.content }}"
+    exclusive: true
+
+- name: Install uv for {{ ansible_user }}
+  ansible.builtin.shell:
+    cmd: curl -LsSf https://astral.sh/uv/install.sh | sh
+    creates: /home/{{ ansible_user }}/.local/bin/uv
+  become: true
+  become_user: "{{ ansible_user }}"
+
+- name: Add uv to system PATH via profile
+  ansible.builtin.copy:
+    dest: /etc/profile.d/uv.sh
+    content: 'export PATH="$HOME/.local/bin:$PATH"'
+    mode: "0644"
+
+- name: Install Prefect via uv
+  ansible.builtin.command:
+    cmd: /home/{{ ansible_user }}/.local/bin/uv tool install prefect
+    creates: /home/{{ ansible_user }}/.local/bin/prefect
+  become: true
+  become_user: "{{ ansible_user }}"
+
+- name: Ensure Prefect log directory exists
+  ansible.builtin.file:
+    path: /var/log/prefect
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+
+- name: Install Prefect systemd service
+  ansible.builtin.template:
+    src: prefect-server.service.j2
+    dest: /etc/systemd/system/prefect-server.service
+    mode: "0644"
+  notify:
+    - Reload systemd
+    - Restart prefect-server
+
+- name: Enable and start Prefect server
+  ansible.builtin.systemd:
+    name: prefect-server
+    enabled: true
+    state: started
+    daemon_reload: true
+
+- name: Configure log rotation for Prefect
+  ansible.builtin.copy:
+    dest: /etc/logrotate.d/prefect
+    content: |
+      /var/log/prefect/*.log {
+          daily
+          rotate 14
+          compress
+          delaycompress
+          missingok
+          notifempty
+          create 0640 {{ ansible_user }} {{ ansible_user }}
+      }
+    mode: "0644"

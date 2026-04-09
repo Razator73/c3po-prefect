@@ -1,0 +1,18 @@
+[Unit]
+Description=Prefect Server
+After=network.target
+
+[Service]
+Type=simple
+User={{ ansible_user }}
+ExecStart=/home/{{ ansible_user }}/.local/bin/prefect server start --host 0.0.0.0
+Restart=on-failure
+RestartSec=5
+StandardOutput=append:/var/log/prefect/server.log
+StandardError=append:/var/log/prefect/server.log
+Environment="HOME=/home/{{ ansible_user }}"
+Environment="PATH=/home/{{ ansible_user }}/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+Environment="PREFECT_UI_API_URL=http://{{ ansible_host }}:4200/api"
+
+[Install]
+WantedBy=multi-user.target

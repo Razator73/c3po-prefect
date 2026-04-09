@@ -1,0 +1,7 @@
+---
+- name: Provision c3po-prefect VM
+  hosts: c3po-prefect
+  become: true
+
+  roles:
+    - prefect

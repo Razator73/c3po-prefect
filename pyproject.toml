@@ -16,6 +16,8 @@ ufa = []
 
 [dependency-groups]
 dev = [
+    "ansible>=12.3.0",
+    "ansible-lint>=26.4.0",
     "mypy>=1.0",
     "pre-commit>=4.0",
     "ruff>=0.9",
