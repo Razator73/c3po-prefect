@@ -15,13 +15,15 @@ jobs:
           sudo sed -i 's|AllowedIPs.*|AllowedIPs = 192.168.1.0/24|' /etc/wireguard/wg0.conf
           sudo chmod 600 /etc/wireguard/wg0.conf
           sudo wg-quick up wg0
+          ping -c 1 -W 5 192.168.1.125 || true
+          sleep 2
 
       - name: Verify VPN connectivity
         run: |
           echo "=== WireGuard status ==="
           sudo wg show
           echo "=== Ping fleet-command ==="
-          ping -c 4 192.168.1.125 || echo "PING FAILED"
+          ping -c 4 192.168.1.125
 
       - name: Deploy via control node
         uses: appleboy/ssh-action@v1
