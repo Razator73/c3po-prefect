@@ -1,0 +1,21 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy via control node
+        uses: appleboy/ssh-action@v1
+        with:
+          host: fleet-command.razator.com
+          username: root
+          key: ${{ secrets.FLEET_COMMAND_SSH_KEY }}
+          script: |
+            cd /opt/c3po-prefect
+            git pull
+            cd ansible
+            /usr/local/bin/uv run ansible-playbook playbook.yml --private-key ~/.ssh/ansible_rsa
