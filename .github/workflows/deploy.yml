@@ -23,7 +23,7 @@ jobs:
           echo "=== WireGuard status ==="
           sudo wg show
           echo "=== Ping fleet-command ==="
-          ping -c 4 192.168.1.125
+          ping -c 4 192.168.1.125 || echo "Ping failed (ICMP may be filtered)"
 
       - name: Deploy via control node
         uses: appleboy/ssh-action@v1
