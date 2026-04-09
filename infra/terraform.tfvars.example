@@ -1,0 +1,15 @@
+# Copy this file to terraform.tfvars and fill in your values.
+# terraform.tfvars is gitignored — never commit it.
+
+proxmox_endpoint     = "https://192.168.1.X:8006/"
+proxmox_api_token    = "root@pam!terraform=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+proxmox_node         = "deathstar"
+proxmox_ssh_username         = "root"
+proxmox_ssh_private_key_file = "/path/to/ssh-key"
+
+gateway           = "192.168.1.1"
+vm_username       = "ubuntu"
+vm_ssh_public_keys = [
+  "ssh-ed25519 AAAA... you@laptop",
+  # "ssh-ed25519 AAAA... you@workstation",  # add more as needed
+]
