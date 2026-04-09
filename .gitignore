@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+dist/
+build/
+
+# Secrets
+.env
+.secrets.baseline
+
+# Prefect
+.prefect/
+
+# uv
+uv.lock
+
+# IDE
+.vscode/
+.idea/
