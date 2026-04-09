@@ -16,6 +16,13 @@ jobs:
           sudo chmod 600 /etc/wireguard/wg0.conf
           sudo wg-quick up wg0
 
+      - name: Verify VPN connectivity
+        run: |
+          echo "=== WireGuard status ==="
+          sudo wg show
+          echo "=== Ping fleet-command ==="
+          ping -c 4 192.168.1.125 || echo "PING FAILED"
+
       - name: Deploy via control node
         uses: appleboy/ssh-action@v1
         with:
