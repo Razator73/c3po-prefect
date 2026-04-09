@@ -20,6 +20,7 @@ dev = [
     "ansible-lint>=26.4.0",
     "mypy>=1.0",
     "pre-commit>=4.0",
+    "pytest>=9.0.3",
     "ruff>=0.9",
 ]
 

@@ -8,10 +8,17 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Connect to WireGuard VPN
+        run: |
+          sudo apt-get install -y wireguard
+          echo "${{ secrets.WIREGUARD_CONFIG }}" | sudo tee /etc/wireguard/wg0.conf > /dev/null
+          sudo chmod 600 /etc/wireguard/wg0.conf
+          sudo wg-quick up wg0
+
       - name: Deploy via control node
         uses: appleboy/ssh-action@v1
         with:
-          host: fleet-command.razator.com
+          host: 192.168.1.125
           username: root
           key: ${{ secrets.FLEET_COMMAND_SSH_KEY }}
           script: |
