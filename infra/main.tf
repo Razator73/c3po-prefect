@@ -34,12 +34,12 @@ resource "proxmox_virtual_environment_vm" "prefect" {
   }
 
   cpu {
-    cores = 2
+    cores = 4
     type  = "x86-64-v2-AES"
   }
 
   memory {
-    dedicated = 2048
+    dedicated = 8192
   }
 
   disk {
@@ -47,11 +47,13 @@ resource "proxmox_virtual_environment_vm" "prefect" {
     # Pre-downloaded manually: wget -O /var/lib/vz/template/iso/noble-server-cloudimg-amd64.img \
     #   https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
     file_id      = "local:iso/noble-server-cloudimg-amd64.img"
-    interface    = "virtio0"
+    interface    = "scsi0"
     iothread     = true
     discard      = "on"
-    size         = 20
+    size         = 32
   }
+
+  scsi_hardware = "virtio-scsi-single"
 
   network_device {
     bridge = "vmbr0"
