@@ -6,6 +6,7 @@
       - cifs-utils
       - chromium-browser
       - xvfb
+      - linux-modules-extra-{{ ansible_kernel }}
     state: present
     update_cache: true
 
