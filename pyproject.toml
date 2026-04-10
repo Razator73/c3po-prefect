@@ -16,7 +16,13 @@ garmin = [
     "pytz>=2024.1",
     "sqlalchemy>=2.0",
 ]
-gsheet = []
+gsheet = [
+    "psycopg2-binary>=2.9",
+    "pygsheets>=2.0",
+    "python-dateutil>=2.9",
+    "sqlalchemy>=2.0",
+    "tabulate>=0.9",
+]
 patreon = [
     "gdown>=5.0",
     "pyvirtualdisplay>=3.0",
@@ -57,6 +63,10 @@ disable_error_code = ["misc"]
 [[tool.mypy.overrides]]
 module = "jobs.scrape_patreon.*"
 disable_error_code = ["attr-defined", "arg-type"]
+
+[[tool.mypy.overrides]]
+module = "jobs.gsheet_budget.*"
+disable_error_code = ["no-untyped-def", "no-untyped-call", "type-arg"]
 
 [[tool.mypy.overrides]]
 module = "deploy"
