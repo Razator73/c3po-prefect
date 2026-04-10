@@ -5,6 +5,7 @@ description = "Orchestrated Python scripts via Prefect"
 requires-python = ">=3.11"
 dependencies = [
     "prefect>=3.0",
+    "razator-utils>=0.4.0",
 ]
 
 [project.optional-dependencies]
@@ -13,7 +14,6 @@ garmin = [
     "garminconnect>=0.2",
     "psycopg2-binary>=2.9",
     "pytz>=2024.1",
-    "razator-utils>=0.1",
     "sqlalchemy>=2.0",
 ]
 gsheet = []

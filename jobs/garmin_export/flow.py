@@ -7,6 +7,7 @@ from garminconnect import Garmin
 from prefect import flow, get_run_logger, task
 from prefect.cache_policies import NO_CACHE
 
+from hooks import discord_failure_hook
 from jobs.garmin_export.model import Activity, GarminStat, WeighIn, init_db
 
 
@@ -222,7 +223,7 @@ def save_to_db(
         session.close()
 
 
-@flow(name="garmin-export")
+@flow(name="garmin-export", on_failure=[discord_failure_hook])
 def garmin_export(lookback_days: int = 1) -> None:
     end_date = dt.date.today()
     start_date = end_date - dt.timedelta(days=lookback_days)

@@ -1,4 +1,5 @@
 # Shared
+c3po_env: "dev"
 discord_alert_url: "https://discord.com/api/webhooks/..."
 database_host: "192.168.1.x"
 
