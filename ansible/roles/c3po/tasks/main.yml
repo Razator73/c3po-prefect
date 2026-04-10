@@ -25,6 +25,12 @@
     state: directory
     mode: "0777"
 
+- name: Load cifs kernel module
+  community.general.modprobe:
+    name: cifs
+    state: present
+    persistent: present
+
 - name: Mount samba share
   ansible.posix.mount:
     path: /data
