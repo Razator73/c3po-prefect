@@ -1,0 +1,62 @@
+---
+- name: Install git
+  ansible.builtin.apt:
+    name: git
+    state: present
+
+- name: Clone or update c3po repo
+  ansible.builtin.git:
+    repo: https://github.com/Razator73/c3po-prefect.git
+    dest: /opt/c3po
+    version: main
+    force: true
+  become: true
+  become_user: "{{ ansible_user }}"
+
+- name: Install c3po dependencies via uv
+  ansible.builtin.command:
+    cmd: /home/{{ ansible_user }}/.local/bin/uv sync --extra garmin
+    chdir: /opt/c3po
+  become: true
+  become_user: "{{ ansible_user }}"
+  changed_when: true
+
+- name: Write c3po environment file
+  ansible.builtin.template:
+    src: c3po.env.j2
+    dest: /opt/c3po/.env
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0600"
+  notify: Restart c3po-deploy
+
+- name: Install c3po-deploy systemd service
+  ansible.builtin.template:
+    src: c3po-deploy.service.j2
+    dest: /etc/systemd/system/c3po-deploy.service
+    mode: "0644"
+  notify:
+    - Reload systemd
+    - Restart c3po-deploy
+
+- name: Enable and start c3po-deploy service
+  ansible.builtin.systemd:
+    name: c3po-deploy
+    enabled: true
+    state: started
+    daemon_reload: true
+
+- name: Configure log rotation for c3po
+  ansible.builtin.copy:
+    dest: /etc/logrotate.d/c3po
+    content: |
+      /var/log/prefect/c3po-deploy.log {
+          daily
+          rotate 14
+          compress
+          delaycompress
+          missingok
+          notifempty
+          create 0640 {{ ansible_user }} {{ ansible_user }}
+      }
+    mode: "0644"

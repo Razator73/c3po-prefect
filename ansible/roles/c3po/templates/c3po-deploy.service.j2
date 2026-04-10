@@ -1,0 +1,20 @@
+[Unit]
+Description=c3po Prefect deploy runner
+After=network.target prefect-server.service
+
+[Service]
+Type=simple
+User={{ ansible_user }}
+WorkingDirectory=/opt/c3po
+EnvironmentFile=/opt/c3po/.env
+ExecStart=/home/{{ ansible_user }}/.local/bin/uv run python deploy.py
+Restart=on-failure
+RestartSec=10
+StandardOutput=append:/var/log/prefect/c3po-deploy.log
+StandardError=append:/var/log/prefect/c3po-deploy.log
+Environment="HOME=/home/{{ ansible_user }}"
+Environment="PATH=/home/{{ ansible_user }}/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+Environment="PREFECT_API_URL=http://127.0.0.1:4200/api"
+
+[Install]
+WantedBy=multi-user.target

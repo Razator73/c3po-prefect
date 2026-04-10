@@ -1,0 +1,9 @@
+---
+- name: Reload systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Restart c3po-deploy
+  ansible.builtin.systemd:
+    name: c3po-deploy
+    state: restarted
