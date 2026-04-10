@@ -13,8 +13,8 @@
   ansible.builtin.copy:
     dest: /etc/samba_credentials
     content: |
-      username={{ samba_username }}
-      password={{ samba_password }}
+      username="{{ samba_username }}"
+      password="{{ samba_password }}"
     owner: root
     group: root
     mode: "0600"
