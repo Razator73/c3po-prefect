@@ -135,8 +135,8 @@ class WeighIn(Base):
 
 def init_db():
     engine = create_engine(
-        f"postgresql+psycopg2://{os.environ['DATABASE_USER']}:{os.environ['DATABASE_PASSWORD']}"
-        f"@{os.environ['DATABASE_HOST']}/{os.environ['DATABASE_DB']}"
+        f"postgresql+psycopg2://{os.environ['GARMIN_DATABASE_USER']}:{os.environ['GARMIN_DATABASE_PASSWORD']}"
+        f"@{os.environ['DATABASE_HOST']}/{os.environ['GARMIN_DATABASE_DB']}"
     )
     Base.metadata.create_all(engine)
 

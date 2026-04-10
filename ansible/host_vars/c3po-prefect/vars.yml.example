@@ -1,0 +1,26 @@
+# Shared
+discord_alert_url: "https://discord.com/api/webhooks/..."
+database_host: "192.168.1.x"
+
+# garmin_export
+garmin_database_user: "garmin"
+garmin_database_password: "changeme"  # pragma: allowlist secret
+garmin_database_db: "garmin"
+
+# cloudflare_dynamic_dns
+cloudflare_api_token: "changeme"
+cloudflare_zone_id: "changeme"
+cloudflare_record_name: "changeme"
+
+# gsheet_budget
+gsheet_database_user: "gsheet"
+gsheet_database_password: "changeme"  # pragma: allowlist secret
+gsheet_database_db: "gsheet"
+
+# scrape_patreon
+patreon_session_id: "changeme"
+
+# ufa_api
+ufa_database_user: "ufa"
+ufa_database_password: "changeme"  # pragma: allowlist secret
+ufa_database_db: "ufa"
