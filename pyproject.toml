@@ -9,7 +9,13 @@ dependencies = [
 
 [project.optional-dependencies]
 cloudflare = []
-garmin = []
+garmin = [
+    "garminconnect>=0.2",
+    "psycopg2-binary>=2.9",
+    "pytz>=2024.1",
+    "razator-utils>=0.1",
+    "sqlalchemy>=2.0",
+]
 gsheet = []
 patreon = []
 ufa = []
@@ -22,6 +28,7 @@ dev = [
     "pre-commit>=4.0",
     "pytest>=9.0.3",
     "ruff>=0.9",
+    "types-pytz>=2026.1.1.20260408",
 ]
 
 [tool.ruff]
@@ -35,3 +42,8 @@ select = ["E", "F", "I", "UP"]
 python_version = "3.11"
 strict = true
 ignore_missing_imports = true
+disable_error_code = ["import-untyped"]
+
+[[tool.mypy.overrides]]
+module = "jobs.*"
+disable_error_code = ["misc"]
