@@ -346,6 +346,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "prefect" },
+    { name = "razator-utils" },
 ]
 
 [package.optional-dependencies]
@@ -353,7 +354,6 @@ garmin = [
     { name = "garminconnect" },
     { name = "psycopg2-binary" },
     { name = "pytz" },
-    { name = "razator-utils" },
     { name = "sqlalchemy" },
 ]
 
@@ -375,7 +375,7 @@ requires-dist = [
     { name = "prefect", specifier = ">=3.0" },
     { name = "psycopg2-binary", marker = "extra == 'garmin'", specifier = ">=2.9" },
     { name = "pytz", marker = "extra == 'garmin'", specifier = ">=2024.1" },
-    { name = "razator-utils", marker = "extra == 'garmin'", specifier = ">=0.1" },
+    { name = "razator-utils", specifier = ">=0.4.0" },
     { name = "sqlalchemy", marker = "extra == 'garmin'", specifier = ">=2.0" },
 ]
 provides-extras = ["cloudflare", "garmin", "gsheet", "patreon", "ufa"]
