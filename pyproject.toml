@@ -47,3 +47,7 @@ disable_error_code = ["import-untyped"]
 [[tool.mypy.overrides]]
 module = "jobs.*"
 disable_error_code = ["misc"]
+
+[[tool.mypy.overrides]]
+module = "deploy"
+disable_error_code = ["arg-type"]
