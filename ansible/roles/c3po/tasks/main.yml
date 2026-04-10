@@ -4,6 +4,14 @@
     name: git
     state: present
 
+- name: Ensure /opt/c3po directory exists
+  ansible.builtin.file:
+    path: /opt/c3po
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: "0755"
+
 - name: Clone or update c3po repo
   ansible.builtin.git:
     repo: https://github.com/Razator73/c3po-prefect.git
