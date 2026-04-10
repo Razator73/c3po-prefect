@@ -19,21 +19,6 @@ jobs:
           ping -c 1 -W 5 192.168.1.125 || true
           sleep 2
 
-      - name: Verify VPN connectivity
-        run: |
-          echo "=== WireGuard status ==="
-          sudo wg show
-          echo "=== wg0 interface IP ==="
-          ip addr show wg0
-          echo "=== Routing table ==="
-          ip route show table main | grep 192.168
-          echo "=== Ping fleet-command ==="
-          ping -c 4 192.168.1.125 || echo "Ping failed (ICMP may be filtered)"
-          echo "=== TCP port 22 on fleet-command ==="
-          nc -zv -w 5 192.168.1.125 22 || echo "TCP 22 unreachable"
-          echo "=== Ping rebel-net WireGuard IP ==="
-          ping -c 2 10.40.33.1 || echo "Ping to rebel-net failed"
-
       - name: Deploy via control node
         uses: appleboy/ssh-action@v1
         with:
