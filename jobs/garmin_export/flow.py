@@ -4,14 +4,17 @@ import os
 import pytz
 import razator_utils
 from garminconnect import Garmin
-from prefect import flow, task
+from prefect import flow, get_run_logger, task
+from prefect.cache_policies import NO_CACHE
 
 from jobs.garmin_export.model import Activity, GarminStat, WeighIn, init_db
 
 
-@task
+@task(cache_policy=NO_CACHE)
 def get_daily_stats(api: Garmin, start_date: dt.date, end_date: dt.date) -> list[dict[str, object]]:
+    logger = get_run_logger()
     start_date = max(start_date, dt.date(2017, 9, 5))
+    logger.info(f"Fetching daily stats from {start_date} to {end_date}")
 
     day_of_week = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     column_mapping = {
@@ -63,14 +66,17 @@ def get_daily_stats(api: Garmin, start_date: dt.date, end_date: dt.date) -> list
         )
         garmin_data.append(day_data)
 
+    logger.info(f"Fetched {len(garmin_data)} days of stats")
     return garmin_data
 
 
-@task
+@task(cache_policy=NO_CACHE)
 def get_garmin_activities(
     api: Garmin, start_date: dt.date, end_date: dt.date
 ) -> list[dict[str, object]]:
+    logger = get_run_logger()
     start_date = max(start_date, dt.date(2013, 9, 1))
+    logger.info(f"Fetching activities from {start_date} to {end_date}")
     acts = api.get_activities_by_date(start_date.isoformat(), end_date.isoformat())
 
     keep_cols = [
@@ -124,6 +130,7 @@ def get_garmin_activities(
             del flat_act["activity_type_sort_order"]
         flat_activities.append(flat_act)
 
+    logger.info(f"Fetched {len(flat_activities)} activities")
     ultimate_acts = [
         a
         for a in flat_activities
@@ -139,13 +146,16 @@ def get_garmin_activities(
         ulti_act["activity_type_type_id"] = 213
         ulti_act["activity_type_type_key"] = "ultimate_disc"
         ulti_act["activity_type_parent_type_id"] = 206
+        logger.info(f"Updated activity {ulti_act['activity_id']} to ultimate disc")
 
     return flat_activities
 
 
-@task
+@task(cache_policy=NO_CACHE)
 def get_weigh_ins(api: Garmin, start_date: dt.date, end_date: dt.date) -> list[dict[str, object]]:
+    logger = get_run_logger()
     start_date = max(start_date, dt.date(2017, 1, 13))
+    logger.info(f"Fetching weigh-ins from {start_date} to {end_date}")
     raw_weigh_ins = api.get_weigh_ins(start_date.isoformat(), end_date.isoformat())
     weigh_ins_list = []
     for weight_day in raw_weigh_ins["dailyWeightSummaries"]:
@@ -170,6 +180,7 @@ def get_weigh_ins(api: Garmin, start_date: dt.date, end_date: dt.date) -> list[d
                 "weight_lbs": round(weigh_in["weight"] * 0.00220462, 1),
             }
         )
+    logger.info(f"Fetched {len(weigh_ins)} weigh-ins")
     return weigh_ins
 
 
@@ -179,6 +190,7 @@ def save_to_db(
     activities: list[dict[str, object]],
     weigh_ins: list[dict[str, object]],
 ) -> None:
+    logger = get_run_logger()
     session = init_db()  # type: ignore[no-untyped-call]
     try:
         for day_stat in daily_stats:
@@ -201,6 +213,11 @@ def save_to_db(
             else:
                 session.add(WeighIn(**weigh_in))
         session.commit()
+        logger.info(
+            f"Saved {len(daily_stats)} daily stats, "
+            f"{len(activities)} activities, "
+            f"{len(weigh_ins)} weigh-ins to DB"
+        )
     finally:
         session.close()
 
