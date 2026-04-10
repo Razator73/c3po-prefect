@@ -6,6 +6,7 @@
       - cifs-utils
       - chromium-browser
       - xvfb
+      - linux-modules-extra-{{ ansible_kernel }}
     state: present
     update_cache: true
 
@@ -13,11 +14,11 @@
   ansible.builtin.copy:
     dest: /etc/samba_credentials
     content: |
-      username="{{ samba_username }}"
-      password="{{ samba_password }}"
+      username={{ samba_username }}
+      password={{ samba_password }}
     owner: root
     group: root
-    mode: "0600"
+    mode: 0600
 
 - name: Ensure /data mount point exists
   ansible.builtin.file:
