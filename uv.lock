@@ -295,6 +295,19 @@ wheels = [
 ]
 
 [[package]]
+name = "beautifulsoup4"
+version = "4.14.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "soupsieve" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c3/b0/1c6a16426d389813b48d95e26898aff79abbde42ad353958ad95cc8c9b21/beautifulsoup4-4.14.3.tar.gz", hash = "sha256:6292b1c5186d356bba669ef9f7f051757099565ad9ada5dd630bd9de5fa7fb86", size = 627737, upload-time = "2025-11-30T15:08:26.084Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1a/39/47f9197bdd44df24d67ac8893641e16f386c984a0619ef2ee4c51fbbc019/beautifulsoup4-4.14.3-py3-none-any.whl", hash = "sha256:0918bfe44902e6ad8d57732ba310582e98da931428d231a5ecb9e7c703a735bb", size = 107721, upload-time = "2025-11-30T15:08:24.087Z" },
+]
+
+[[package]]
 name = "black"
 version = "26.3.1"
 source = { registry = "https://pypi.org/simple" }
@@ -356,6 +369,13 @@ garmin = [
     { name = "pytz" },
     { name = "sqlalchemy" },
 ]
+patreon = [
+    { name = "gdown" },
+    { name = "pyvirtualdisplay" },
+    { name = "selenium" },
+    { name = "setuptools" },
+    { name = "undetected-chromedriver" },
+]
 
 [package.dev-dependencies]
 dev = [
@@ -372,11 +392,16 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "garminconnect", marker = "extra == 'garmin'", specifier = ">=0.2" },
+    { name = "gdown", marker = "extra == 'patreon'", specifier = ">=5.0" },
     { name = "prefect", specifier = ">=3.0" },
     { name = "psycopg2-binary", marker = "extra == 'garmin'", specifier = ">=2.9" },
     { name = "pytz", marker = "extra == 'garmin'", specifier = ">=2024.1" },
+    { name = "pyvirtualdisplay", marker = "extra == 'patreon'", specifier = ">=3.0" },
     { name = "razator-utils", specifier = ">=0.4.0" },
+    { name = "selenium", marker = "extra == 'patreon'", specifier = ">=4.0" },
+    { name = "setuptools", marker = "extra == 'patreon'" },
     { name = "sqlalchemy", marker = "extra == 'garmin'", specifier = ">=2.0" },
+    { name = "undetected-chromedriver", marker = "extra == 'patreon'", specifier = ">=3.0" },
 ]
 provides-extras = ["cloudflare", "garmin", "gsheet", "patreon", "ufa"]
 
@@ -872,6 +897,21 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/fd/f2/13e511755d74339686f75012ee31ce899e0491d15e2387007e497dc7f6b7/garminconnect-0.3.1.tar.gz", hash = "sha256:3124ba9ab0041833a7b173a7f7b05e925f11d40554e3a3ba03496d0e9b169efd", size = 48864, upload-time = "2026-04-03T13:52:19.141Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/1d/ae/b9202f8615fedf6edb95a2a3d746177a412edc96935ce4acfdf0f0364aa8/garminconnect-0.3.1-py3-none-any.whl", hash = "sha256:f19fc32c25fba580c8c790a8676d5e52c6048a0ab17a6983ea9c18672b782fe3", size = 43971, upload-time = "2026-04-03T13:52:17.914Z" },
+]
+
+[[package]]
+name = "gdown"
+version = "5.2.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "beautifulsoup4" },
+    { name = "filelock" },
+    { name = "requests", extra = ["socks"] },
+    { name = "tqdm" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f4/cf/919a9fa16faf8e4572a24d941353edaf4d54e3ddcd048e6c1aeb8c7a9903/gdown-5.2.1.tar.gz", hash = "sha256:247c2ad1f579db5b66b54c04e6a871995fc8fd7021708b950b8ba7b32cf90323", size = 284743, upload-time = "2026-01-11T09:34:01.037Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/87/21/35dd0a0b7428bd67b12b358d7b4277f693493a3839b071d540a4c8357b78/gdown-5.2.1-py3-none-any.whl", hash = "sha256:391f0480d495fb87644d1a1ee3ddfeb2144e1de31408fbc74f7e3b3ba927052b", size = 18241, upload-time = "2026-01-11T09:34:02.637Z" },
 ]
 
 [[package]]
@@ -1574,6 +1614,18 @@ wheels = [
 ]
 
 [[package]]
+name = "outcome"
+version = "1.3.0.post0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "attrs" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/98/df/77698abfac98571e65ffeb0c1fba8ffd692ab8458d617a0eed7d9a8d38f2/outcome-1.3.0.post0.tar.gz", hash = "sha256:9dcf02e65f2971b80047b377468e72a268e15c0af3cf1238e6ff14f7f91143b8", size = 21060, upload-time = "2023-10-26T04:26:04.361Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/55/8b/5ab7257531a5d830fc8000c476e63c935488d74609b50f9384a643ec0a62/outcome-1.3.0.post0-py2.py3-none-any.whl", hash = "sha256:e771c5ce06d1415e356078d3bdd68523f284b4ce5419828922b6871e65eda82b", size = 10692, upload-time = "2023-10-26T04:26:02.532Z" },
+]
+
+[[package]]
 name = "packaging"
 version = "26.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2016,6 +2068,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pysocks"
+version = "1.7.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/bd/11/293dd436aea955d45fc4e8a35b6ae7270f5b8e00b53cf6c024c83b657a11/PySocks-1.7.1.tar.gz", hash = "sha256:3f8804571ebe159c380ac6de37643bb4685970655d3bba243530d6558b799aa0", size = 284429, upload-time = "2019-09-20T02:07:35.714Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8d/59/b4572118e098ac8e46e399a1dd0f2d85403ce8bbaad9ec79373ed6badaf9/PySocks-1.7.1-py3-none-any.whl", hash = "sha256:2725bd0a9925919b9b51739eea5f9e2bae91e83288108a9ad338b2e3a4435ee5", size = 16725, upload-time = "2019-09-20T02:06:22.938Z" },
+]
+
+[[package]]
 name = "pytest"
 version = "9.0.3"
 source = { registry = "https://pypi.org/simple" }
@@ -2127,6 +2188,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/56/db/b8721d71d945e6a8ac63c0fc900b2067181dbb50805958d4d4661cf7d277/pytz-2026.1.post1.tar.gz", hash = "sha256:3378dde6a0c3d26719182142c56e60c7f9af7e968076f31aae569d72a0358ee1", size = 321088, upload-time = "2026-03-03T07:47:50.683Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/10/99/781fe0c827be2742bcc775efefccb3b048a3a9c6ce9aec0cbf4a101677e5/pytz-2026.1.post1-py2.py3-none-any.whl", hash = "sha256:f2fd16142fda348286a75e1a524be810bb05d444e5a081f37f7affc635035f7a", size = 510489, upload-time = "2026-03-03T07:47:49.167Z" },
+]
+
+[[package]]
+name = "pyvirtualdisplay"
+version = "3.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/86/9f/23e5a82987c26d225139948a224a93318d7a7c8b166d4dbe4de7426dc4e4/PyVirtualDisplay-3.0.tar.gz", hash = "sha256:09755bc3ceb6eb725fb07eca5425f43f2358d3bf08e00d2a9b792a1aedd16159", size = 18560, upload-time = "2022-02-13T07:57:05.783Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/90/eb/c3b8deb661cb3846db63288c99bbb39f217b7807fc8acb2fd058db41e2e6/PyVirtualDisplay-3.0-py3-none-any.whl", hash = "sha256:40d4b8dfe4b8de8552e28eb367647f311f88a130bf837fe910e7f180d5477f0e", size = 15258, upload-time = "2022-02-13T07:57:04.051Z" },
 ]
 
 [[package]]
@@ -2367,6 +2437,11 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/5f/a4/98b9c7c6428a668bf7e42ebb7c79d576a1c3c1e3ae2d47e674b468388871/requests-2.33.1.tar.gz", hash = "sha256:18817f8c57c6263968bc123d237e3b8b08ac046f5456bd1e307ee8f4250d3517", size = 134120, upload-time = "2026-03-30T16:09:15.531Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d7/8e/7540e8a2036f79a125c1d2ebadf69ed7901608859186c856fa0388ef4197/requests-2.33.1-py3-none-any.whl", hash = "sha256:4e6d1ef462f3626a1f0a0a9c42dd93c63bad33f9f1c1937509b8c5c8718ab56a", size = 64947, upload-time = "2026-03-30T16:09:13.83Z" },
+]
+
+[package.optional-dependencies]
+socks = [
+    { name = "pysocks" },
 ]
 
 [[package]]
@@ -2620,12 +2695,38 @@ wheels = [
 ]
 
 [[package]]
+name = "selenium"
+version = "4.43.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "certifi" },
+    { name = "trio" },
+    { name = "trio-websocket" },
+    { name = "typing-extensions" },
+    { name = "urllib3", extra = ["socks"] },
+    { name = "websocket-client" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/09/6a/fe950b498a3c570ab538ad1c2b60f18863eecf077a865eea4459f3fa78a9/selenium-4.43.0.tar.gz", hash = "sha256:bada5c08a989f812728a4b5bea884d8e91894e939a441cc3a025201ce718581e", size = 967747, upload-time = "2026-04-10T06:47:03.149Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/82/c7/0c55fbb0275fc368676ea50514ce7d7839d799a8b3ff8425f380186c7626/selenium-4.43.0-py3-none-any.whl", hash = "sha256:4f97639055dcfa9eadf8ccf549ba7b0e49c655d4e2bde19b9a44e916b754e769", size = 9573091, upload-time = "2026-04-10T06:47:01.134Z" },
+]
+
+[[package]]
 name = "semver"
 version = "3.0.4"
 source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/72/d1/d3159231aec234a59dd7d601e9dd9fe96f3afff15efd33c1070019b26132/semver-3.0.4.tar.gz", hash = "sha256:afc7d8c584a5ed0a11033af086e8af226a9c0b206f313e0301f8dd7b6b589602", size = 269730, upload-time = "2025-01-24T13:19:27.617Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a6/24/4d91e05817e92e3a61c8a21e08fd0f390f5301f1c448b137c57c4bc6e543/semver-3.0.4-py3-none-any.whl", hash = "sha256:9c824d87ba7f7ab4a1890799cec8596f15c1241cb473404ea1cb0c55e4b04746", size = 17912, upload-time = "2025-01-24T13:19:24.949Z" },
+]
+
+[[package]]
+name = "setuptools"
+version = "82.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/4f/db/cfac1baf10650ab4d1c111714410d2fbb77ac5a616db26775db562c8fab2/setuptools-82.0.1.tar.gz", hash = "sha256:7d872682c5d01cfde07da7bccc7b65469d3dca203318515ada1de5eda35efbf9", size = 1152316, upload-time = "2026-03-09T12:47:17.221Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9d/76/f789f7a86709c6b087c5a2f52f911838cad707cc613162401badc665acfe/setuptools-82.0.1-py3-none-any.whl", hash = "sha256:a59e362652f08dcd477c78bb6e7bd9d80a7995bc73ce773050228a348ce2e5bb", size = 1006223, upload-time = "2026-03-09T12:47:15.026Z" },
 ]
 
 [[package]]
@@ -2662,6 +2763,15 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/e8/c4/ba2f8066cceb6f23394729afe52f3bf7adec04bf9ed2c820b39e19299111/sortedcontainers-2.4.0.tar.gz", hash = "sha256:25caa5a06cc30b6b83d11423433f65d1f9d76c4c6a0c90e3379eaa43b9bfdb88", size = 30594, upload-time = "2021-05-16T22:03:42.897Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/32/46/9cb0e58b2deb7f82b84065f37f3bffeb12413f947f9388e4cac22c4621ce/sortedcontainers-2.4.0-py2.py3-none-any.whl", hash = "sha256:a163dcaede0f1c021485e957a39245190e74249897e2ae4b2aa38595db237ee0", size = 29575, upload-time = "2021-05-16T22:03:41.177Z" },
+]
+
+[[package]]
+name = "soupsieve"
+version = "2.8.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/7b/ae/2d9c981590ed9999a0d91755b47fc74f74de286b0f5cee14c9269041e6c4/soupsieve-2.8.3.tar.gz", hash = "sha256:3267f1eeea4251fb42728b6dfb746edc9acaffc4a45b27e19450b676586e8349", size = 118627, upload-time = "2026-01-20T04:27:02.457Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/46/2c/1462b1d0a634697ae9e55b3cecdcb64788e8b7d63f54d923fcd0bb140aed/soupsieve-2.8.3-py3-none-any.whl", hash = "sha256:ed64f2ba4eebeab06cc4962affce381647455978ffc1e36bb79a545b91f45a95", size = 37016, upload-time = "2026-01-20T04:27:01.012Z" },
 ]
 
 [[package]]
@@ -2763,6 +2873,49 @@ wheels = [
 ]
 
 [[package]]
+name = "tqdm"
+version = "4.67.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/09/a9/6ba95a270c6f1fbcd8dac228323f2777d886cb206987444e4bce66338dd4/tqdm-4.67.3.tar.gz", hash = "sha256:7d825f03f89244ef73f1d4ce193cb1774a8179fd96f31d7e1dcde62092b960bb", size = 169598, upload-time = "2026-02-03T17:35:53.048Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/16/e1/3079a9ff9b8e11b846c6ac5c8b5bfb7ff225eee721825310c91b3b50304f/tqdm-4.67.3-py3-none-any.whl", hash = "sha256:ee1e4c0e59148062281c49d80b25b67771a127c85fc9676d3be5f243206826bf", size = 78374, upload-time = "2026-02-03T17:35:50.982Z" },
+]
+
+[[package]]
+name = "trio"
+version = "0.33.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "attrs" },
+    { name = "cffi", marker = "implementation_name != 'pypy' and os_name == 'nt'" },
+    { name = "idna" },
+    { name = "outcome" },
+    { name = "sniffio" },
+    { name = "sortedcontainers" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/52/b6/c744031c6f89b18b3f5f4f7338603ab381d740a7f45938c4607b2302481f/trio-0.33.0.tar.gz", hash = "sha256:a29b92b73f09d4b48ed249acd91073281a7f1063f09caba5dc70465b5c7aa970", size = 605109, upload-time = "2026-02-14T18:40:55.386Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1c/93/dab25dc87ac48da0fe0f6419e07d0bfd98799bed4e05e7b9e0f85a1a4b4b/trio-0.33.0-py3-none-any.whl", hash = "sha256:3bd5d87f781d9b0192d592aef28691f8951d6c2e41b7e1da4c25cde6c180ae9b", size = 510294, upload-time = "2026-02-14T18:40:53.313Z" },
+]
+
+[[package]]
+name = "trio-websocket"
+version = "0.12.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "outcome" },
+    { name = "trio" },
+    { name = "wsproto" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d1/3c/8b4358e81f2f2cfe71b66a267f023a91db20a817b9425dd964873796980a/trio_websocket-0.12.2.tar.gz", hash = "sha256:22c72c436f3d1e264d0910a3951934798dcc5b00ae56fc4ee079d46c7cf20fae", size = 33549, upload-time = "2025-02-25T05:16:58.947Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c7/19/eb640a397bba49ba49ef9dbe2e7e5c04202ba045b6ce2ec36e9cadc51e04/trio_websocket-0.12.2-py3-none-any.whl", hash = "sha256:df605665f1db533f4a386c94525870851096a223adcb97f72a07e8b4beba45b6", size = 21221, upload-time = "2025-02-25T05:16:57.545Z" },
+]
+
+[[package]]
 name = "typer"
 version = "0.24.1"
 source = { registry = "https://pypi.org/simple" }
@@ -2847,12 +3000,28 @@ wheels = [
 ]
 
 [[package]]
+name = "undetected-chromedriver"
+version = "3.5.5"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "requests" },
+    { name = "selenium" },
+    { name = "websockets" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/1f/98/7ab46625ce2317756e4e857fe6ac24b6378c3e8f477da26c95226ed8ccb7/undetected-chromedriver-3.5.5.tar.gz", hash = "sha256:9f945e1435005247abe17de316bcfda85b284a4177fd5f25167c78ced33b65ec", size = 65409, upload-time = "2024-02-17T17:18:36.855Z" }
+
+[[package]]
 name = "urllib3"
 version = "2.6.3"
 source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/c7/24/5f1b3bdffd70275f6661c76461e25f024d5a38a46f04aaca912426a2b1d3/urllib3-2.6.3.tar.gz", hash = "sha256:1b62b6884944a57dbe321509ab94fd4d3b307075e0c2eae991ac71ee15ad38ed", size = 435556, upload-time = "2026-01-07T16:24:43.925Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/39/08/aaaad47bc4e9dc8c725e68f9d04865dbcb2052843ff09c97b08904852d84/urllib3-2.6.3-py3-none-any.whl", hash = "sha256:bf272323e553dfb2e87d9bfd225ca7b0f467b919d7bbd355436d3fd37cb0acd4", size = 131584, upload-time = "2026-01-07T16:24:42.685Z" },
+]
+
+[package.optional-dependencies]
+socks = [
+    { name = "pysocks" },
 ]
 
 [[package]]
@@ -2893,6 +3062,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/79/3e/c0bdc27cf06f4e47680bd5803a07cb3dfd17de84cde92dd217dcb9e05253/wcmatch-10.1.tar.gz", hash = "sha256:f11f94208c8c8484a16f4f48638a85d771d9513f4ab3f37595978801cb9465af", size = 117421, upload-time = "2025-06-22T19:14:02.49Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/eb/d8/0d1d2e9d3fabcf5d6840362adcf05f8cf3cd06a73358140c3a97189238ae/wcmatch-10.1-py3-none-any.whl", hash = "sha256:5848ace7dbb0476e5e55ab63c6bbd529745089343427caa5537f230cc01beb8a", size = 39854, upload-time = "2025-06-22T19:14:00.978Z" },
+]
+
+[[package]]
+name = "websocket-client"
+version = "1.9.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/2c/41/aa4bf9664e4cda14c3b39865b12251e8e7d239f4cd0e3cc1b6c2ccde25c1/websocket_client-1.9.0.tar.gz", hash = "sha256:9e813624b6eb619999a97dc7958469217c3176312b3a16a4bd1bc7e08a46ec98", size = 70576, upload-time = "2025-10-07T21:16:36.495Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/34/db/b10e48aa8fff7407e67470363eac595018441cf32d5e1001567a7aeba5d2/websocket_client-1.9.0-py3-none-any.whl", hash = "sha256:af248a825037ef591efbf6ed20cc5faa03d3b47b9e5a2230a529eeee1c1fc3ef", size = 82616, upload-time = "2025-10-07T21:16:34.951Z" },
 ]
 
 [[package]]
@@ -3049,6 +3227,18 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/36/4a/b27b182fdf24c9760a91481c6b97d9f536a15f6bc7c33d750eccaa245670/whenever-0.9.5-cp314-cp314t-win32.whl", hash = "sha256:681c9f4d322182df28037a33f0d4eadf7577fcd590130f7a5d23763a86ab5687", size = 417599, upload-time = "2026-01-11T19:47:36.201Z" },
     { url = "https://files.pythonhosted.org/packages/6d/93/712f65c4fc3c188b0c163cd650cb04a46f993a22d1ad3f66a3e4a42a39f8/whenever-0.9.5-cp314-cp314t-win_amd64.whl", hash = "sha256:37242c895078bb1bfc26bea460f6d92dc5bdfe4a59e95a4f9e01f99b90f0157e", size = 440654, upload-time = "2026-01-11T19:47:46.924Z" },
     { url = "https://files.pythonhosted.org/packages/91/fb/1b112af72e5a2b5ac66b5a6a478cc220117224c1481a2b1a35e87222a791/whenever-0.9.5-py3-none-any.whl", hash = "sha256:cc600303e703d57cc42c5db1c81bbc3becb8ef6fde5c46aee5d68c292239fc4b", size = 64873, upload-time = "2026-01-11T19:47:49.585Z" },
+]
+
+[[package]]
+name = "wsproto"
+version = "1.3.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "h11" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c7/79/12135bdf8b9c9367b8701c2c19a14c913c120b882d50b014ca0d38083c2c/wsproto-1.3.2.tar.gz", hash = "sha256:b86885dcf294e15204919950f666e06ffc6c7c114ca900b060d6e16293528294", size = 50116, upload-time = "2025-11-20T18:18:01.871Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a4/f5/10b68b7b1544245097b2a1b8238f66f2fc6dcaeb24ba5d917f52bd2eed4f/wsproto-1.3.2-py3-none-any.whl", hash = "sha256:61eea322cdf56e8cc904bd3ad7573359a242ba65688716b0710a5eb12beab584", size = 24405, upload-time = "2025-11-20T18:18:00.454Z" },
 ]
 
 [[package]]

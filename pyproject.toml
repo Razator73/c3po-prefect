@@ -17,7 +17,13 @@ garmin = [
     "sqlalchemy>=2.0",
 ]
 gsheet = []
-patreon = []
+patreon = [
+    "gdown>=5.0",
+    "pyvirtualdisplay>=3.0",
+    "selenium>=4.0",
+    "setuptools",
+    "undetected-chromedriver>=3.0",
+]
 ufa = []
 
 [dependency-groups]
@@ -47,6 +53,10 @@ disable_error_code = ["import-untyped"]
 [[tool.mypy.overrides]]
 module = "jobs.*"
 disable_error_code = ["misc"]
+
+[[tool.mypy.overrides]]
+module = "jobs.scrape_patreon.*"
+disable_error_code = ["attr-defined", "arg-type"]
 
 [[tool.mypy.overrides]]
 module = "deploy"
