@@ -1,8 +1,37 @@
 ---
-- name: Install git
+- name: Install system packages
   ansible.builtin.apt:
-    name: git
+    name:
+      - git
+      - cifs-utils
+      - chromium-browser
+      - xvfb
     state: present
+    update_cache: true
+
+- name: Write samba credentials file
+  ansible.builtin.copy:
+    dest: /etc/samba_credentials
+    content: |
+      username={{ samba_username }}
+      password={{ samba_password }}
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Ensure /data mount point exists
+  ansible.builtin.file:
+    path: /data
+    state: directory
+    mode: "0777"
+
+- name: Mount samba share
+  ansible.posix.mount:
+    path: /data
+    src: //192.168.1.97/data
+    fstype: cifs
+    opts: "credentials=/etc/samba_credentials,iocharset=utf8,file_mode=0777,dir_mode=0777,uid=1000,gid=1000,mfsymlinks"
+    state: mounted
 
 - name: Ensure /opt/c3po directory exists
   ansible.builtin.file:
@@ -23,7 +52,7 @@
 
 - name: Install c3po dependencies via uv
   ansible.builtin.command:
-    cmd: /home/{{ ansible_user }}/.local/bin/uv sync --extra garmin
+    cmd: /home/{{ ansible_user }}/.local/bin/uv sync --extra garmin --extra patreon
     chdir: /opt/c3po
   become: true
   become_user: "{{ ansible_user }}"

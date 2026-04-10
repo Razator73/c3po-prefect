@@ -19,7 +19,11 @@ gsheet_database_password: "changeme"  # pragma: allowlist secret
 gsheet_database_db: "gsheet"
 
 # scrape_patreon
-patreon_session_id: "changeme"
+patreon_username: "changeme"
+patreon_password: "changeme"  # pragma: allowlist secret
+patreon_download_path: "/path/to/downloads"
+samba_username: "changeme"
+samba_password: "changeme"  # pragma: allowlist secret
 
 # ufa_api
 ufa_database_user: "ufa"
