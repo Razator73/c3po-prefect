@@ -18,7 +18,7 @@
       password={{ samba_password }}
     owner: root
     group: root
-    mode: 0600
+    mode: "0600"
 
 - name: Ensure /data mount point exists
   ansible.builtin.file:
