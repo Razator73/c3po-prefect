@@ -21,7 +21,7 @@ gsheet_database_db: "gsheet"
 # scrape_patreon
 patreon_username: "changeme"
 patreon_password: "changeme"  # pragma: allowlist secret
-patreon_download_path: "/data/omar-reactions"
+patreon_download_path: "/path/to/downloads"
 samba_username: "changeme"
 samba_password: "changeme"  # pragma: allowlist secret
 
