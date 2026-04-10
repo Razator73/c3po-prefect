@@ -12,7 +12,8 @@ jobs:
         run: |
           sudo apt-get install -y wireguard
           echo "${{ secrets.WIREGUARD_CONFIG }}" | sudo tee /etc/wireguard/wg0.conf > /dev/null
-          sudo sed -i 's|AllowedIPs.*|AllowedIPs = 192.168.1.0/24|' /etc/wireguard/wg0.conf
+          # sudo sed -i 's|AllowedIPs.*|AllowedIPs = 192.168.1.0/24|' /etc/wireguard/wg0.conf
+          # sudo sed -i '/^DNS/d' /etc/wireguard/wg0.conf
           sudo chmod 600 /etc/wireguard/wg0.conf
           sudo wg-quick up wg0
           ping -c 1 -W 5 192.168.1.125 || true
@@ -28,6 +29,10 @@ jobs:
           ip route show table main | grep 192.168
           echo "=== Ping fleet-command ==="
           ping -c 4 192.168.1.125 || echo "Ping failed (ICMP may be filtered)"
+          echo "=== TCP port 22 on fleet-command ==="
+          nc -zv -w 5 192.168.1.125 22 || echo "TCP 22 unreachable"
+          echo "=== Ping rebel-net WireGuard IP ==="
+          ping -c 2 10.40.33.1 || echo "Ping to rebel-net failed"
 
       - name: Deploy via control node
         uses: appleboy/ssh-action@v1
