@@ -30,7 +30,12 @@ patreon = [
     "setuptools",
     "undetected-chromedriver>=3.0",
 ]
-ufa = []
+ufa = [
+    "audl>=0.0.18",
+    "pandas>=2.0",
+    "psycopg2-binary>=2.9",
+    "sqlalchemy>=2.0",
+]
 
 [dependency-groups]
 dev = [
@@ -67,6 +72,10 @@ disable_error_code = ["attr-defined", "arg-type"]
 [[tool.mypy.overrides]]
 module = "jobs.gsheet_budget.*"
 disable_error_code = ["no-untyped-def", "no-untyped-call", "type-arg"]
+
+[[tool.mypy.overrides]]
+module = "jobs.ufa_api.*"
+disable_error_code = ["index"]
 
 [[tool.mypy.overrides]]
 module = "deploy"
