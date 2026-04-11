@@ -28,8 +28,8 @@ RENAME_COLS = {
 
 def _get_db_engine() -> Engine:
     return create_engine(
-        f"postgresql://{os.environ['DB_USERNAME']}:{os.environ['DB_PASSWORD']}@"
-        f"{os.environ['DB_HOST']}:{os.environ['DB_PORT']}/{os.environ['DB_NAME']}"
+        f"postgresql://{os.environ['UFA_DATABASE_USER']}:{os.environ['UFA_DATABASE_PASSWORD']}@"
+        f"{os.environ['DATABASE_HOST']}/{os.environ['UFA_DATABASE_DB']}"
     )
 
 
