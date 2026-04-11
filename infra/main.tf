@@ -21,7 +21,7 @@ provider "proxmox" {
 }
 
 resource "proxmox_virtual_environment_vm" "prefect" {
-  name      = "c3po-prefect"
+  name      = "c3po"
   node_name = var.proxmox_node
   vm_id     = 405
 
@@ -68,7 +68,7 @@ resource "proxmox_virtual_environment_vm" "prefect" {
     datastore_id = "local-zfs"
     ip_config {
       ipv4 {
-        address = "192.168.1.130/24"
+        address = "192.168.1.113/24"
         gateway = var.gateway
       }
     }

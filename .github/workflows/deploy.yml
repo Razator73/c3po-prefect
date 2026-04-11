@@ -26,7 +26,7 @@ jobs:
           username: root
           key: ${{ secrets.FLEET_COMMAND_SSH_KEY }}
           script: |
-            cd /opt/c3po-prefect
+            cd /opt/c3po
             git pull
             cd ansible
             /usr/local/bin/uv run ansible-playbook playbook.yml --private-key ~/.ssh/ansible_rsa
