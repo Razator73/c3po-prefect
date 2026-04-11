@@ -10,6 +10,7 @@ from jobs.gsheet_budget.flow import (
     update_budget_db,
 )
 from jobs.scrape_patreon.flow import scrape_patreon
+from jobs.ufa_api.flow import update_ufa_data
 
 
 def main() -> None:
@@ -47,6 +48,10 @@ def main() -> None:
         budget_summary.to_deployment(
             name="budget-summary",
             schedule=Schedule(cron="5 5 5 * *", timezone="America/Denver"),
+        ),
+        update_ufa_data.to_deployment(
+            name="ufa-api-daily",
+            schedule=Schedule(cron="0 0 * * *", timezone="America/Denver"),
         ),
     )
 
