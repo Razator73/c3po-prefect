@@ -18,4 +18,4 @@ until curl -sf http://localhost:4200/api/health > /dev/null 2>&1; do
 done
 
 echo "Prefect server ready. Starting deploy..."
-uv run --env-file .env --extra garmin --extra patreon --extra gsheet --extra ufa python deploy.py
+uv run --env-file .env --extra cloudflare --extra garmin --extra patreon --extra gsheet --extra ufa python deploy.py

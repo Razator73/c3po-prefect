@@ -59,7 +59,7 @@
 
 - name: Install c3po dependencies via uv
   ansible.builtin.command:
-    cmd: /home/{{ ansible_user }}/.local/bin/uv sync --extra garmin --extra patreon --extra gsheet --extra ufa
+    cmd: /home/{{ ansible_user }}/.local/bin/uv sync --extra cloudflare --extra garmin --extra patreon --extra gsheet --extra ufa
     chdir: /opt/c3po
   become: true
   become_user: "{{ ansible_user }}"

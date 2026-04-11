@@ -3,6 +3,7 @@ import os
 from prefect import serve
 from prefect.schedules import Schedule
 
+from jobs.cloudflare_dynamic_dns.flow import cloudflare_dynamic_dns
 from jobs.garmin_export.flow import garmin_export
 from jobs.gsheet_budget.flow import (
     budget_new_month,
@@ -23,6 +24,10 @@ def _set_schedule(cron: str, tz: str = "America/Denver") -> Schedule | None:
 
 def main() -> None:
     serve(
+        cloudflare_dynamic_dns.to_deployment(
+            name="cloudflare-dns",
+            schedule=_set_schedule("*/10 * * * *"),
+        ),
         garmin_export.to_deployment(
             name="garmin-daily",
             schedule=_set_schedule("0 9 * * 1-6"),
