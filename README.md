@@ -8,7 +8,7 @@ Personal Python scripts migrated to [Prefect](https://www.prefect.io/) for sched
 |---|---|---|
 | `cloudflare_dynamic_dns` | every 10 min | Updates Cloudflare DNS record with current public IP |
 | `garmin_export` | 9am Mon–Sat / 9am Sun (8-day lookback) | Exports Garmin activity and health data to PostgreSQL |
-| `gsheet_budget` | 7 schedules | Syncs budget data from Google Sheets |
+| `gsheet_budget` | 6 schedules | Syncs budget data from Google Sheets |
 | `scrape_patreon` | 11am & 11pm daily | Scrapes Patreon for new posts |
 | `ufa_api` | midnight daily | Updates UFA data via API |
 
@@ -29,7 +29,7 @@ Requires [uv](https://docs.astral.sh/uv/).
 
 ```bash
 # Install dependencies
-uv sync --extra garmin  # add other --extra flags as needed
+uv sync --extra garmin --extra patreon --extra gsheet  # add/remove extras as needed
 
 # Copy and fill in environment variables
 cp .env.example .env
@@ -59,6 +59,6 @@ See `ansible/host_vars/c3po-prefect/vars.yml.example` for all required variables
 
 | Variable | Description |
 |---|---|
-| `C3PO_ENV` | `prod` or `dev` — controls Prefect UI URL in Discord alerts |
+| `C3PO_ENV` | `prod` or `dev` — controls Prefect UI URL in Discord alerts and email recipients |
 | `DISCORD_ALERT_URL` | Discord webhook URL for failure notifications |
 | `DATABASE_HOST` | Shared PostgreSQL host |
