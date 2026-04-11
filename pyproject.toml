@@ -9,7 +9,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-cloudflare = []
+cloudflare = [
+    "requests>=2.32",
+]
 garmin = [
     "garminconnect>=0.2",
     "psycopg2-binary>=2.9",

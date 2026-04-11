@@ -29,7 +29,7 @@ Requires [uv](https://docs.astral.sh/uv/).
 
 ```bash
 # Install dependencies
-uv sync --extra garmin --extra patreon --extra gsheet  # add/remove extras as needed
+uv sync --extra cloudflare --extra garmin --extra patreon --extra gsheet --extra ufa  # add/remove extras as needed
 
 # Copy and fill in environment variables
 cp .env.example .env
