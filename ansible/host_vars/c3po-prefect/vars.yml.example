@@ -15,7 +15,6 @@ garmin_database_db: "garmin"
 # cloudflare_dynamic_dns
 cloudflare_api_token: "changeme"
 cloudflare_zone_id: "changeme"
-cloudflare_record_name: "changeme"
 
 # gsheet_budget
 budget_database_user: "budget"
