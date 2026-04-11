@@ -1,5 +1,5 @@
 all:
   hosts:
-    c3po-prefect:
-      ansible_host: 192.168.1.130
+    c3po:
+      ansible_host: 192.168.1.113
       ansible_user: ryan

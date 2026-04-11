@@ -1,6 +1,6 @@
 ---
-- name: Provision c3po-prefect VM
-  hosts: c3po-prefect
+- name: Provision c3po VM
+  hosts: c3po
   become: true
 
   roles:

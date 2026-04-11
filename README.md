@@ -47,7 +47,7 @@ Deployments are handled via GitHub Actions on merge to `main`. The workflow conn
 To deploy manually from the control node:
 
 ```bash
-cd /opt/c3po-prefect
+cd /opt/c3po
 git pull
 cd ansible
 uv run ansible-playbook playbook.yml
@@ -55,7 +55,7 @@ uv run ansible-playbook playbook.yml
 
 ## Environment variables
 
-See `ansible/host_vars/c3po-prefect/vars.yml.example` for all required variables. Key ones:
+See `ansible/host_vars/c3po/vars.yml.example` for all required variables. Key ones:
 
 | Variable | Description |
 |---|---|

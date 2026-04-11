@@ -1,7 +1,9 @@
 ---
-- name: Install qemu-guest-agent
+- name: Install system packages
   ansible.builtin.apt:
-    name: qemu-guest-agent
+    name:
+      - qemu-guest-agent
+      - wakeonlan
     state: present
     update_cache: true
 

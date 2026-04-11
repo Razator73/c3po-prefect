@@ -1,6 +1,6 @@
 output "vm_ip" {
   description = "IP address of the Prefect VM"
-  value       = "192.168.1.130"
+  value       = "192.168.1.113"
 }
 
 output "vm_id" {
@@ -10,5 +10,5 @@ output "vm_id" {
 
 output "ssh_command" {
   description = "SSH command to connect to the VM"
-  value       = "ssh ${var.vm_username}@192.168.1.130"
+  value       = "ssh ${var.vm_username}@192.168.1.113"
 }
