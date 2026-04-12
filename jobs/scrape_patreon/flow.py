@@ -1,9 +1,11 @@
 import os
+import re
+import shutil
+import subprocess
 import time
 from pathlib import Path
 
 import gdown
-import razator_utils
 import undetected_chromedriver as uc
 from prefect import flow, get_run_logger, task
 from prefect.cache_policies import NO_CACHE
@@ -11,6 +13,36 @@ from pyvirtualdisplay import Display
 from selenium.webdriver.common.by import By
 
 from hooks import discord_failure_hook
+
+_CHROME_CANDIDATE_PATHS = [
+    "/usr/bin/chromium-browser",
+    "/usr/bin/chromium",
+    "/usr/bin/google-chrome",
+    "/usr/bin/google-chrome-stable",
+    "/snap/bin/chromium",
+]
+
+
+def _find_chrome_binary() -> str | None:
+    for name in ["chromium-browser", "chromium", "google-chrome", "google-chrome-stable"]:
+        binary = shutil.which(name)
+        if binary:
+            return binary
+    for path in _CHROME_CANDIDATE_PATHS:
+        if Path(path).exists():
+            return path
+    return None
+
+
+def _get_chrome_version(binary: str) -> int | None:
+    try:
+        output = subprocess.check_output([binary, "--version"], stderr=subprocess.DEVNULL).decode()
+        match = re.search(r"(\d+)\.", output)
+        if match:
+            return int(match.group(1))
+    except Exception:
+        pass
+    return None
 
 
 def _download_path(name: str) -> Path:
@@ -112,12 +144,20 @@ def scrape_patreon() -> None:
     download_cols = ["Naruto Shippuden", "JJK", "Frieren"]
 
     with Display(visible=False):
-        chrome_version = razator_utils.get_chrome_major_version()
+        chrome_binary = _find_chrome_binary()
+        chrome_version = _get_chrome_version(chrome_binary) if chrome_binary else None
+        logger.info(f"Chrome binary: {chrome_binary}")
         logger.info(f"Detected Chrome version: {chrome_version}")
         options = uc.ChromeOptions()
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
-        with uc.Chrome(subprocess=True, version_main=chrome_version, options=options) as driver:
+        options.add_argument("--disable-gpu")
+        with uc.Chrome(
+            subprocess=True,
+            version_main=chrome_version,
+            browser_executable_path=chrome_binary,
+            options=options,
+        ) as driver:
             driver.get("https://www.patreon.com/login")
             time.sleep(3)
             email_element = driver.find_element(By.NAME, "email")
