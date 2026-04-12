@@ -1,10 +1,22 @@
 ---
+- name: Download Google Chrome signing key
+  ansible.builtin.get_url:
+    url: https://dl.google.com/linux/linux_signing_key.pub
+    dest: /usr/share/keyrings/google-chrome.asc
+    mode: "0644"
+
+- name: Add Google Chrome apt repository
+  ansible.builtin.apt_repository:
+    repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/google-chrome.asc] https://dl.google.com/linux/chrome/deb/ stable main"
+    filename: google-chrome
+    state: present
+
 - name: Install system packages
   ansible.builtin.apt:
     name:
       - git
       - cifs-utils
-      - chromium-browser
+      - google-chrome-stable
       - xvfb
       - linux-modules-extra-{{ ansible_kernel }}
     state: present

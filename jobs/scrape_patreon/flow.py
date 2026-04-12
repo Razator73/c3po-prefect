@@ -143,15 +143,19 @@ def scrape_patreon() -> None:
     logger = get_run_logger()
     download_cols = ["Naruto Shippuden", "JJK", "Frieren"]
 
+    chrome_binary = _find_chrome_binary()
+    chrome_version = _get_chrome_version(chrome_binary) if chrome_binary else None
+    logger.info(f"Chrome binary: {chrome_binary}")
+    logger.info(f"Detected Chrome version: {chrome_version}")
+    options = uc.ChromeOptions()
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--disable-extensions")
+    options.add_argument("--disable-background-networking")
+    options.add_argument("--disable-sync")
+    options.add_argument("--no-first-run")
     with Display(visible=False):
-        chrome_binary = _find_chrome_binary()
-        chrome_version = _get_chrome_version(chrome_binary) if chrome_binary else None
-        logger.info(f"Chrome binary: {chrome_binary}")
-        logger.info(f"Detected Chrome version: {chrome_version}")
-        options = uc.ChromeOptions()
-        options.add_argument("--no-sandbox")
-        options.add_argument("--disable-dev-shm-usage")
-        options.add_argument("--disable-gpu")
         with uc.Chrome(
             subprocess=True,
             version_main=chrome_version,
