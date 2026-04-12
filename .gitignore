@@ -17,5 +17,9 @@ build/
 .vscode/
 .idea/
 
+# Terraform
+terraform.tfstate
+terraform.tfstate.backup
+
 # Claude Code (local session settings — personal, not shared)
 .claude/settings.local.json
