@@ -113,7 +113,11 @@ def scrape_patreon() -> None:
 
     with Display(visible=False):
         chrome_version = razator_utils.get_chrome_major_version()
-        with uc.Chrome(subprocess=True, version_main=chrome_version) as driver:
+        logger.info(f"Detected Chrome version: {chrome_version}")
+        options = uc.ChromeOptions()
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        with uc.Chrome(subprocess=True, version_main=chrome_version, options=options) as driver:
             driver.get("https://www.patreon.com/login")
             time.sleep(3)
             email_element = driver.find_element(By.NAME, "email")
