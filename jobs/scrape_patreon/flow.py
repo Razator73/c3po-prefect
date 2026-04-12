@@ -9,6 +9,7 @@ import gdown
 import undetected_chromedriver as uc
 from prefect import flow, get_run_logger, task
 from prefect.cache_policies import NO_CACHE
+from pyvirtualdisplay import Display
 from selenium.webdriver.common.by import By
 
 from hooks import discord_failure_hook
@@ -147,79 +148,85 @@ def scrape_patreon() -> None:
     logger.info(f"Chrome binary: {chrome_binary}")
     logger.info(f"Detected Chrome version: {chrome_version}")
     options = uc.ChromeOptions()
-    options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-gpu")
-    with uc.Chrome(
-        subprocess=True,
-        version_main=chrome_version,
-        browser_executable_path=chrome_binary,
-        options=options,
-    ) as driver:
-        driver.get("https://www.patreon.com/login")
-        time.sleep(3)
-        email_element = driver.find_element(By.NAME, "email")
-        email_element.send_keys(os.environ["PATREON_USERNAME"])
-        email_element.submit()
-        time.sleep(1)
-        driver.find_element(By.NAME, "current-password").send_keys(os.environ["PATREON_PASSWORD"])
-        email_element.submit()
-        time.sleep(2)
-
-        driver.get("https://www.patreon.com/c/omariorpg/collections")
-        time.sleep(10)
-        for _ in range(25):
-            last_height = driver.execute_script("return document.body.scrollHeight")
-            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+    options.add_argument("--disable-extensions")
+    options.add_argument("--disable-background-networking")
+    options.add_argument("--disable-sync")
+    options.add_argument("--no-first-run")
+    with Display(visible=False):
+        with uc.Chrome(
+            subprocess=True,
+            version_main=chrome_version,
+            browser_executable_path=chrome_binary,
+            options=options,
+        ) as driver:
+            driver.get("https://www.patreon.com/login")
             time.sleep(3)
-            new_height = driver.execute_script("return document.body.scrollHeight")
-            if new_height == last_height:
-                break
-
-        links = driver.find_elements(By.TAG_NAME, "a")
-        collection_a_tags = [
-            a
-            for a in links
-            if str(a.get_property("href")).startswith("https://www.patreon.com/collection/")
-        ]
-        collection_links: dict[str, dict[str, str | int]] = {}
-        for col_link in collection_a_tags:
-            try:
-                wrapper = col_link.find_element(
-                    By.XPATH,
-                    "./ancestor::div[.//p[@data-tag='box-collection-num-post']][1]",
-                )
-                col_count_str = wrapper.find_element(
-                    By.CSS_SELECTOR, "p[data-tag='box-collection-num-post']"
-                ).text.strip()
-                col_name = col_link.text.strip()
-                if not col_name:
-                    col_name = wrapper.find_element(
-                        By.CSS_SELECTOR, "[data-tag='box-collection-title']"
-                    ).text.strip()
-                collection_links[col_name] = {
-                    "name": col_name,
-                    "count": int(col_count_str),
-                    "url": col_link.get_property("href"),
-                }
-            except Exception as e:
-                logger.warning(f"Failed to parse collection link: {e}")
-
-        logger.info(f"Collections found: {list(collection_links.keys())}")
-
-        for col in download_cols:
-            if col not in collection_links:
-                logger.info(f"Couldn't find the collection: {col}")
-                continue
-            col_data = collection_links[col]
-            posts = fetch_collection_links(
-                driver,
-                col_data["count"],
-                col_data["name"],
-                col_data["url"],
+            email_element = driver.find_element(By.NAME, "email")
+            email_element.send_keys(os.environ["PATREON_USERNAME"])
+            email_element.submit()
+            time.sleep(1)
+            driver.find_element(By.NAME, "current-password").send_keys(
+                os.environ["PATREON_PASSWORD"]
             )
-            download_posts(col_data["name"], posts)
+            email_element.submit()
+            time.sleep(2)
+
+            driver.get("https://www.patreon.com/c/omariorpg/collections")
+            time.sleep(10)
+            for _ in range(25):
+                last_height = driver.execute_script("return document.body.scrollHeight")
+                driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+                time.sleep(3)
+                new_height = driver.execute_script("return document.body.scrollHeight")
+                if new_height == last_height:
+                    break
+
+            links = driver.find_elements(By.TAG_NAME, "a")
+            collection_a_tags = [
+                a
+                for a in links
+                if str(a.get_property("href")).startswith("https://www.patreon.com/collection/")
+            ]
+            collection_links: dict[str, dict[str, str | int]] = {}
+            for col_link in collection_a_tags:
+                try:
+                    wrapper = col_link.find_element(
+                        By.XPATH,
+                        "./ancestor::div[.//p[@data-tag='box-collection-num-post']][1]",
+                    )
+                    col_count_str = wrapper.find_element(
+                        By.CSS_SELECTOR, "p[data-tag='box-collection-num-post']"
+                    ).text.strip()
+                    col_name = col_link.text.strip()
+                    if not col_name:
+                        col_name = wrapper.find_element(
+                            By.CSS_SELECTOR, "[data-tag='box-collection-title']"
+                        ).text.strip()
+                    collection_links[col_name] = {
+                        "name": col_name,
+                        "count": int(col_count_str),
+                        "url": col_link.get_property("href"),
+                    }
+                except Exception as e:
+                    logger.warning(f"Failed to parse collection link: {e}")
+
+            logger.info(f"Collections found: {list(collection_links.keys())}")
+
+            for col in download_cols:
+                if col not in collection_links:
+                    logger.info(f"Couldn't find the collection: {col}")
+                    continue
+                col_data = collection_links[col]
+                posts = fetch_collection_links(
+                    driver,
+                    col_data["count"],
+                    col_data["name"],
+                    col_data["url"],
+                )
+                download_posts(col_data["name"], posts)
 
 
 if __name__ == "__main__":

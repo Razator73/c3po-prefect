@@ -17,6 +17,7 @@
       - git
       - cifs-utils
       - google-chrome-stable
+      - xvfb
       - linux-modules-extra-{{ ansible_kernel }}
     state: present
     update_cache: true
