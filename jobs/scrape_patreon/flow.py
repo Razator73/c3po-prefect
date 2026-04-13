@@ -15,16 +15,16 @@ from selenium.webdriver.common.by import By
 from hooks import discord_failure_hook
 
 _CHROME_CANDIDATE_PATHS = [
+    "/usr/bin/google-chrome-stable",
+    "/usr/bin/google-chrome",
     "/usr/bin/chromium-browser",
     "/usr/bin/chromium",
-    "/usr/bin/google-chrome",
-    "/usr/bin/google-chrome-stable",
     "/snap/bin/chromium",
 ]
 
 
 def _find_chrome_binary() -> str | None:
-    for name in ["chromium-browser", "chromium", "google-chrome", "google-chrome-stable"]:
+    for name in ["google-chrome-stable", "google-chrome", "chromium-browser", "chromium"]:
         binary = shutil.which(name)
         if binary:
             return binary
