@@ -22,6 +22,10 @@ def _set_schedule(cron: str, tz: str = "America/Denver") -> Schedule | None:
     return Schedule(cron=cron, timezone=tz) if _IS_PROD else None
 
 
+def _set_schedules(*crons: str, tz: str = "America/Denver") -> list[Schedule] | None:
+    return [Schedule(cron=cron, timezone=tz) for cron in crons] if _IS_PROD else None
+
+
 def main() -> None:
     serve(
         cloudflare_dynamic_dns.to_deployment(
@@ -63,8 +67,12 @@ def main() -> None:
             schedule=_set_schedule("5 5 5 * *"),
         ),
         update_ufa_data.to_deployment(
-            name="ufa-api-daily",
-            schedule=_set_schedule("0 0 * * *"),
+            name="ufa-games",
+            schedules=_set_schedules(
+                "*/5 15-23 * * 4-7",
+                "0 */4 * * 1-3",
+                "0 0-14 * * 4-7",
+            ),
         ),
     )
 
