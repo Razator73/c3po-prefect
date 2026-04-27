@@ -13,8 +13,11 @@ garmin_database_password: "changeme"  # pragma: allowlist secret
 garmin_database_db: "garmin"
 
 # cloudflare_dynamic_dns
-cloudflare_api_token: "changeme"
-cloudflare_zone_id: "changeme"
+cloudflare_zones:
+  - zone_id: "changeme"
+    api_token: "changeme"  # pragma: allowlist secret
+  - zone_id: "changeme"
+    api_token: "changeme"  # pragma: allowlist secret
 
 # gsheet_budget
 budget_database_user: "budget"

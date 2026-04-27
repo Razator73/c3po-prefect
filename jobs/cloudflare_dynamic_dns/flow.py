@@ -9,9 +9,9 @@ from prefect.cache_policies import NO_CACHE
 from hooks import discord_failure_hook
 
 
-def _get_headers() -> dict[str, str]:
+def _get_headers(api_token: str) -> dict[str, str]:
     return {
-        "Authorization": f"Bearer {os.environ['CLOUDFLARE_API_TOKEN']}",
+        "Authorization": f"Bearer {api_token}",
         "Content-Type": "application/json",
     }
 
@@ -24,10 +24,10 @@ def get_public_ip() -> str:
 
 
 @task(cache_policy=NO_CACHE)
-def get_dns_records(zone_id: str) -> list[dict[str, Any]]:
+def get_dns_records(zone_id: str, api_token: str) -> list[dict[str, Any]]:
     r = requests.get(
         f"https://api.cloudflare.com/client/v4/zones/{zone_id}/dns_records",
-        headers=_get_headers(),
+        headers=_get_headers(api_token),
     )
     r.raise_for_status()
     data = r.json()
@@ -36,7 +36,9 @@ def get_dns_records(zone_id: str) -> list[dict[str, Any]]:
 
 
 @task(cache_policy=NO_CACHE)
-def update_dns_records(zone_id: str, records: list[dict[str, Any]], ip_address: str) -> None:
+def update_dns_records(
+    zone_id: str, api_token: str, records: list[dict[str, Any]], ip_address: str
+) -> None:
     logger = get_run_logger()
     for record in records:
         if record["type"] not in ("A", "AAAA"):
@@ -52,7 +54,7 @@ def update_dns_records(zone_id: str, records: list[dict[str, Any]], ip_address: 
         }
         r = requests.put(
             f"https://api.cloudflare.com/client/v4/zones/{zone_id}/dns_records/{record['id']}",
-            headers=_get_headers(),
+            headers=_get_headers(api_token),
             data=json.dumps(payload),
         )
         r.raise_for_status()
@@ -63,7 +65,8 @@ def update_dns_records(zone_id: str, records: list[dict[str, Any]], ip_address: 
 
 @flow(name="cloudflare-dynamic-dns", on_failure=[discord_failure_hook])
 def cloudflare_dynamic_dns() -> None:
-    zone_id = os.environ["CLOUDFLARE_ZONE_ID"]
+    zones: list[dict[str, str]] = json.loads(os.environ["CLOUDFLARE_ZONES"])
     ip_address = get_public_ip()
-    records = get_dns_records(zone_id)
-    update_dns_records(zone_id, records, ip_address)
+    for zone in zones:
+        records = get_dns_records(zone["zone_id"], zone["api_token"])
+        update_dns_records(zone["zone_id"], zone["api_token"], records, ip_address)
