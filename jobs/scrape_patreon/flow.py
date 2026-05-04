@@ -141,7 +141,7 @@ def download_posts(col_name: str, posts: list[tuple[Path, str]]) -> None:
 @flow(name="scrape-patreon", on_failure=[discord_failure_hook])
 def scrape_patreon() -> None:
     logger = get_run_logger()
-    download_cols = ["Naruto Shippuden", "JJK", "Frieren"]
+    download_cols = ["JJK", "Witch Hat Atelier"]
 
     chrome_binary = _find_chrome_binary()
     chrome_version = _get_chrome_version(chrome_binary) if chrome_binary else None
