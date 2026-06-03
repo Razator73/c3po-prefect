@@ -1,7 +1,9 @@
 import datetime as dt
+import json
 import os
 
 import pandas as pd
+from audl.stats.endpoints.gamestats import GameStats
 from audl.stats.endpoints.seasonschedule import SeasonSchedule
 from prefect import flow, get_run_logger, task
 from prefect.cache_policies import NO_CACHE
@@ -64,6 +66,8 @@ def fetch_season_schedule(season: int) -> pd.DataFrame:
     logger.info(f"Fetched {len(df)} games")
     now = dt.datetime.now(dt.UTC)
     df.to_csv(f"/data/ufa_game_data/{now: %Y%m%d%H%M%S}_ufa_games.csv", index=False)
+    with open(f"/data/ufa_game_data/{now: %Y%m%d%H%M%S}_shred_col.json", "w") as f:
+        json.dump(GameStats("2026-06-05-COL-SLC").json, f, indent=2)
     return df
 
 
