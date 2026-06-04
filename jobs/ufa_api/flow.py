@@ -65,10 +65,10 @@ def fetch_season_schedule(season: int) -> pd.DataFrame:
     df = df.rename(columns=RENAME_COLS)
     logger.info(f"Fetched {len(df)} games")
     now = dt.datetime.now(dt.UTC)
-    df.to_csv(f"/data/ufa_game_data/{now: %Y%m%d%H%M%S}_ufa_games.csv", index=False)
+    df.to_csv(f"/data/ufa_game_data/{now:%Y%m%d%H%M%S}_ufa_games.csv", index=False)
     for _, game in df[df.week == "week-7"].iterrows():
         with open(
-            f"/data/ufa_game_data/{now: %Y%m%d%H%M%S}_{game.away_team_id}_{game.home_team_id}.json",
+            f"/data/ufa_game_data/{now:%Y%m%d%H%M%S}_{game.away_team_id}_{game.home_team_id}.json",
             "w",
         ) as f:
             json.dump(GameStats(game.id).json["game"], f, indent=2)
