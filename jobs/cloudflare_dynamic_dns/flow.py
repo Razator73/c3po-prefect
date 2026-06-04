@@ -6,7 +6,7 @@ import requests
 from prefect import flow, get_run_logger, task
 from prefect.cache_policies import NO_CACHE
 
-from hooks import discord_failure_hook
+from hooks import consecutive_failure_hook
 
 
 def _get_headers(api_token: str) -> dict[str, str]:
@@ -63,7 +63,7 @@ def update_dns_records(
         logger.info(f"IP updated to {ip_address} for {record['name']}")
 
 
-@flow(name="cloudflare-dynamic-dns", on_failure=[discord_failure_hook])
+@flow(name="cloudflare-dynamic-dns", on_failure=[consecutive_failure_hook(threshold=5)])
 def cloudflare_dynamic_dns() -> None:
     zones: list[dict[str, str]] = json.loads(os.environ["CLOUDFLARE_ZONES"])
     ip_address = get_public_ip()
