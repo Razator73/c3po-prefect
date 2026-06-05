@@ -79,11 +79,17 @@ def fetch_collection_links(
         time.sleep(5)
 
     all_links = driver.find_elements(By.TAG_NAME, "a")
-    post_links = [
-        (a.text.split("\n")[-1], a.get_property("href"))
-        for a in all_links
-        if a.get_property("href").endswith(f"collection={url.split('/')[-1]}")
-    ][::-1]
+    col_id = url.split("/")[-1]
+    seen: dict[str, tuple[str, str]] = {}
+    for a in all_links:
+        href = a.get_property("href")
+        if not href or not href.endswith(f"collection={col_id}") or href in seen:
+            continue
+        parts = a.text.split("\n")
+        title = next((p for p in parts if "reacting" in p.lower()), None)
+        if title:
+            seen[href] = (title, href)
+    post_links = list(seen.values())[::-1]
     logger.info(f"Found {len(post_links)} posts")
 
     col_posts = []
