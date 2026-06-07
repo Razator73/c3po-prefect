@@ -1,9 +1,11 @@
 import datetime as dt
-import json
+
+# import json
 import os
 
 import pandas as pd
-from audl.stats.endpoints.gamestats import GameStats
+
+# from audl.stats.endpoints.gamestats import GameStats
 from audl.stats.endpoints.seasonschedule import SeasonSchedule
 from prefect import flow, get_run_logger, task
 from prefect.cache_policies import NO_CACHE
@@ -64,14 +66,15 @@ def fetch_season_schedule(season: int) -> pd.DataFrame:
     df["season"] = str(season)
     df = df.rename(columns=RENAME_COLS)
     logger.info(f"Fetched {len(df)} games")
-    now = dt.datetime.now(dt.UTC)
-    df.to_csv(f"/data/ufa_game_data/{now:%Y%m%d%H%M%S}_ufa_games.csv", index=False)
-    for _, game in df[df.week == "week-7"].iterrows():
-        with open(
-            f"/data/ufa_game_data/{now:%Y%m%d%H%M%S}_{game.away_team_id}_{game.home_team_id}.json",
-            "w",
-        ) as f:
-            json.dump(GameStats(game.id).json["game"], f, indent=2)
+    # now = dt.datetime.now(dt.UTC)
+    # df.to_csv(f"/data/ufa_game_data/{now:%Y%m%d%H%M%S}_ufa_games.csv", index=False)
+    # for _, game in df[df.week == "week-7"].iterrows():
+    #     teams = f'{game.away_team_id}_{game.home_team_id}'
+    #     with open(
+    #         f"/data/ufa_game_data/{now:%Y%m%d%H%M%S}_{teams}.json",
+    #         "w",
+    #     ) as f:
+    #         json.dump(GameStats(game.id).json["game"], f, indent=2)
     return df
 
 
