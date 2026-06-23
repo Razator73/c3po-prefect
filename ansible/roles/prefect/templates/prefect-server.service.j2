@@ -12,7 +12,7 @@ StandardOutput=append:/var/log/prefect/server.log
 StandardError=append:/var/log/prefect/server.log
 Environment="HOME=/home/{{ ansible_user }}"
 Environment="PATH=/home/{{ ansible_user }}/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-Environment="PREFECT_UI_API_URL=http://{{ ansible_host }}:4200/api"
+Environment="PREFECT_UI_API_URL={{ prefect_ui_api_url }}"
 Environment="PREFECT_SERVER_UI_SHOW_PROMOTIONAL_CONTENT=false"
 
 [Install]

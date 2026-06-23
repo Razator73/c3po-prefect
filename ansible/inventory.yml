@@ -3,3 +3,7 @@ all:
     c3po:
       ansible_host: 192.168.1.113
       ansible_user: ryan
+      # Public URL the UI tells the browser to call. Must be the HTTPS
+      # reverse-proxy address, not the internal IP, or browsers block the
+      # API calls as mixed content when the UI is served over HTTPS.
+      prefect_ui_api_url: "https://c3po.razator.cc/api"
