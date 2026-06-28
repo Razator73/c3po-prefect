@@ -18,7 +18,11 @@
       - cifs-utils
       - google-chrome-stable
       - xvfb
-      - linux-modules-extra-{{ ansible_kernel }}
+      # Meta-package: keeps linux-modules-extra (which provides cifs.ko and its
+      # helper modules) in sync with the running kernel across upgrades. Pinning
+      # to {{ ansible_kernel }} strands cifs after a kernel bump and silently
+      # breaks the /data mount.
+      - linux-image-generic
     state: present
     update_cache: true
 
@@ -49,7 +53,7 @@
     path: /data
     src: //192.168.1.97/data
     fstype: cifs
-    opts: "credentials=/etc/samba_credentials,iocharset=utf8,file_mode=0777,dir_mode=0777,uid=1000,gid=1000,mfsymlinks"
+    opts: "credentials=/etc/samba_credentials,iocharset=utf8,file_mode=0777,dir_mode=0777,uid=1000,gid=1000,mfsymlinks,_netdev,nofail"
     state: mounted
 
 - name: Ensure /opt/c3po directory exists
