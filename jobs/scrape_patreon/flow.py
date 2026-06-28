@@ -11,6 +11,8 @@ from prefect import flow, get_run_logger, task
 from prefect.cache_policies import NO_CACHE
 from pyvirtualdisplay import Display
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 from hooks import discord_failure_hook
 
@@ -174,16 +176,18 @@ def scrape_patreon() -> None:
             options=options,
         )
         try:
+            wait = WebDriverWait(driver, 30)
             driver.get("https://www.patreon.com/login")
-            time.sleep(3)
-            email_element = driver.find_element(By.NAME, "email")
+            # Patreon's login is a two-step form: enter email, submit, then the
+            # password field renders in. Wait for each field to be interactable
+            # rather than relying on fixed sleeps, which race the page render and
+            # raise ElementNotInteractableException.
+            email_element = wait.until(EC.element_to_be_clickable((By.NAME, "email")))
             email_element.send_keys(os.environ["PATREON_USERNAME"])
             email_element.submit()
-            time.sleep(1)
-            driver.find_element(By.NAME, "current-password").send_keys(
-                os.environ["PATREON_PASSWORD"]
-            )
-            email_element.submit()
+            password_element = wait.until(EC.element_to_be_clickable((By.NAME, "current-password")))
+            password_element.send_keys(os.environ["PATREON_PASSWORD"])
+            password_element.submit()
             time.sleep(2)
 
             driver.get("https://www.patreon.com/c/omariorpg/collections")
