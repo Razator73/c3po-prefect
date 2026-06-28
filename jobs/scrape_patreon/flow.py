@@ -162,12 +162,18 @@ def scrape_patreon() -> None:
     options.add_argument("--disable-sync")
     options.add_argument("--no-first-run")
     with Display(visible=False):
-        with uc.Chrome(
+        # NOTE: do not use uc.Chrome as a context manager. undetected-chromedriver
+        # 3.5.5's __exit__ restarts the driver service and opens a *new* session
+        # instead of quitting, which fails with SessionNotCreatedException
+        # ("chrome not reachable") once the browser is torn down. Manage teardown
+        # explicitly via driver.quit() in a finally block instead.
+        driver = uc.Chrome(
             subprocess=True,
             version_main=chrome_version,
             browser_executable_path=chrome_binary,
             options=options,
-        ) as driver:
+        )
+        try:
             driver.get("https://www.patreon.com/login")
             time.sleep(3)
             email_element = driver.find_element(By.NAME, "email")
@@ -233,6 +239,8 @@ def scrape_patreon() -> None:
                     col_data["url"],
                 )
                 download_posts(col_data["name"], posts)
+        finally:
+            driver.quit()
 
 
 if __name__ == "__main__":
