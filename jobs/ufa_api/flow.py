@@ -4,6 +4,7 @@ import datetime as dt
 import os
 
 import pandas as pd
+import razator_utils
 
 # from audl.stats.endpoints.gamestats import GameStats
 from audl.stats.endpoints.seasonschedule import SeasonSchedule
@@ -93,6 +94,14 @@ def sync_teams(df: pd.DataFrame) -> None:
 
 @task(cache_policy=NO_CACHE)
 def delete_orphaned_games(season: int, api_ids: list[str]) -> None:
+    """Remove games that are in the DB but missing from the latest API schedule.
+
+    A game missing from the API is usually a transient API hiccup or a schedule
+    reshuffle rather than a real deletion, so games that already have picks are
+    never removed automatically -- deleting them would silently drop user pick
+    data. Such games are left in place and reported to Discord for manual review;
+    only orphaned games with no picks are cleaned up.
+    """
     logger = get_run_logger()
     engine = _get_db_engine()
     try:
@@ -102,21 +111,43 @@ def delete_orphaned_games(season: int, api_ids: list[str]) -> None:
             )
             db_ids = {row[0] for row in result.fetchall()}
             orphaned_ids = db_ids - set(api_ids)
-            if orphaned_ids:
+            if not orphaned_ids:
+                logger.info("No orphaned games to delete.")
+                return
+
+            # Split orphans by whether they have picks; games with picks are protected.
+            picks_result = connection.execute(
+                text("SELECT DISTINCT game_id FROM picks WHERE game_id IN :ids"),
+                {"ids": tuple(orphaned_ids)},
+            )
+            protected_ids = {row[0] for row in picks_result.fetchall()}
+            deletable_ids = orphaned_ids - protected_ids
+
+            if deletable_ids:
                 logger.info(
-                    f"Deleting {len(orphaned_ids)} orphaned games for season {season}:"
-                    f" {orphaned_ids}"
+                    f"Deleting {len(deletable_ids)} orphaned games with no picks for"
+                    f" season {season}: {deletable_ids}"
                 )
                 connection.execute(
-                    text("DELETE FROM picks WHERE game_id IN :ids"), {"ids": tuple(orphaned_ids)}
-                )
-                connection.execute(
-                    text("DELETE FROM games WHERE id IN :ids"), {"ids": tuple(orphaned_ids)}
+                    text("DELETE FROM games WHERE id IN :ids"), {"ids": tuple(deletable_ids)}
                 )
                 connection.commit()
-                logger.info("Deleted orphaned games and associated picks.")
+                logger.info("Deleted orphaned games with no picks.")
             else:
-                logger.info("No orphaned games to delete.")
+                logger.info("No orphaned games without picks to delete.")
+
+            if protected_ids:
+                logger.warning(
+                    f"{len(protected_ids)} orphaned game(s) have picks and were NOT deleted:"
+                    f" {protected_ids}"
+                )
+                message = (
+                    f":warning: **ufa-api**: {len(protected_ids)} game(s) missing from the API"
+                    f" still have picks and were NOT deleted (season {season}):"
+                    f" {', '.join(sorted(protected_ids))}\n"
+                    "Manual review needed -- likely a transient API issue or schedule change."
+                )
+                razator_utils.discord_message(os.environ["DISCORD_ALERT_URL"], message)
     finally:
         engine.dispose()
 
