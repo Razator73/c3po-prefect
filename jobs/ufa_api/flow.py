@@ -66,6 +66,8 @@ def fetch_season_schedule(season: int) -> pd.DataFrame:
     df = SeasonSchedule(season).get_schedule()
     df["season"] = str(season)
     df = df.rename(columns=RENAME_COLS)
+    # filter out allstar game due to id too long and I don't care about it
+    df = df[df.id != "2026-08-28-allstar-game"]
     logger.info(f"Fetched {len(df)} games")
     # now = dt.datetime.now(dt.UTC)
     # df.to_csv(f"/data/ufa_game_data/{now:%Y%m%d%H%M%S}_ufa_games.csv", index=False)
