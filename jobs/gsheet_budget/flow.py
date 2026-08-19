@@ -396,7 +396,7 @@ def create_new_month_sheet() -> None:
     )
     nm.update_value("B33", f'={this_month_name}!B33-sumifs(O:O,R:R,"Kareena loan payment")')
     nm.update_value("B34", f'={this_month_name}!B34-sumifs(O:O,R:R,"Jenn and AJ loan payment")')
-    nm.update_value("B35", f'={this_month_name}!B35+sumifs(I:I,L:L,"NAS payment")')
+    nm.update_value("B35", f'=round(({this_month_name}!B35*1.003333)+sumifs(O:O,R:R,"Dad loan")-sumifs(I:I,L:L,"Dad loan"),2)')
 
     overview = ss.worksheet_by_title("Overview")
     for i in range(2, 13):
