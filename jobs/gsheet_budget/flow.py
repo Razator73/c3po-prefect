@@ -25,6 +25,7 @@ _ACCOUNT_IDS = {
     "Savings 1": 2,
     "Savings 2": 3,
     "Credit Card": 4,
+    "Capital One Card": 4,
     "Amazon Card": 5,
     "HSA": 6,
     "Zions Checking": 1,
@@ -32,6 +33,7 @@ _ACCOUNT_IDS = {
     "Zions Savings 2": 3,
     "MACU Checking": 7,
     "MACU Savings": 8,
+    "Wells Fargo Card": 9,
 }
 
 _ALL_MONTHS = ["Dec", "Nov", "Oct", "Sep", "Aug", "Jul", "Jun", "May", "Apr", "Mar", "Feb", "Jan"]
@@ -185,6 +187,10 @@ def save_budget_data(withdrawal_data: list, deposit_data: list, full_refresh: bo
     bad_withdrawal_rows = []
     for row in withdrawal_data:
         notes, add_notes, is_missing = _get_notes(row[4].value, row[4].note, withdrawal_mapping)
+        account_id = _ACCOUNT_IDS.get(row[2].value)
+        if account_id is None:
+            logger.warning(f'There is no account mapped to "{row[2].value}"')
+            continue
         if is_missing:
             missing_withdrawals.append(notes)
         try:
@@ -192,7 +198,7 @@ def save_budget_data(withdrawal_data: list, deposit_data: list, full_refresh: bo
                 Withdrawal(
                     withdrawal_date=dt.datetime.strptime(row[0].value, "%m/%d/%Y"),
                     amount=round(float(re.sub("[$,]", "", row[1].value)), 2),
-                    account_id=_ACCOUNT_IDS[row[2].value],
+                    account_id=account_id,
                     category=row[3].value,
                     notes=notes,
                     additional_notes=add_notes,
@@ -208,6 +214,10 @@ def save_budget_data(withdrawal_data: list, deposit_data: list, full_refresh: bo
     bad_deposit_rows = []
     for row in deposit_data:
         notes, add_notes, is_missing = _get_notes(row[4].value, row[4].note, deposit_mapping)
+        account_id = _ACCOUNT_IDS.get(row[2].value)
+        if account_id is None:
+            logger.warning(f'There is no account mapped to "{row[2].value}"')
+            continue
         if is_missing:
             missing_deposits.append(notes)
         try:
@@ -215,7 +225,7 @@ def save_budget_data(withdrawal_data: list, deposit_data: list, full_refresh: bo
                 Deposit(
                     deposit_date=dt.datetime.strptime(row[0].value, "%m/%d/%Y"),
                     amount=round(float(re.sub("[$,]", "", row[1].value)), 2),
-                    account_id=_ACCOUNT_IDS[row[2].value],
+                    account_id=account_id,
                     category=row[3].value,
                     notes=notes,
                     additional_notes=add_notes,
@@ -360,46 +370,53 @@ def create_new_month_sheet() -> None:
         nm = ss.add_worksheet(next_month_name, src_worksheet=tm)
         nm.index = next_month_date.month
 
+    # clear values and update dates
     date_str = next_month_date.replace(day=1).strftime("%m/%d/%Y")
     nm.clear("H4", "L200", fields="userEnteredValue,note")
-    nm.clear("N5", "R200", fields="userEnteredValue,note")
+    nm.clear("N6", "R200", fields="userEnteredValue,note")
     nm.update_value("H3", date_str)
     nm.update_value("N3", date_str)
     nm.update_value("N4", date_str)
+    nm.update_value("N5", date_str)
+    nm.update_value("O5", f"=round({this_month_name}!B36*.003333,2)")
     nm.update_value("E2", f"={this_month_name}!D2")
-    nm.clear("B18", "B19")
-    nm.clear("B21", "B23")
+    nm.clear("B19", "B20")
+    nm.clear("B22", "B24")
     this_month_index = next_month_index - 1
     nm.update_value(
-        "E10", f"=AVERAGE(Overview!E2:{pygsheets.Address((2, this_month_index)).label})"
+        "E11", f"=AVERAGE(Overview!E2:{pygsheets.Address((2, this_month_index)).label})"
     )
-    for i in range(14, 25):
+    for i in range(15, 26):
         nm.update_value(
             f"E{i}",
-            f"=AVERAGE(Overview!E{i - 11}:{pygsheets.Address((i - 11, this_month_index)).label})",
+            f"=AVERAGE(Overview!E{i - 12}:{pygsheets.Address((i - 12, this_month_index)).label})",
         )
 
+    # Update previous month balances on accounts
     nm.update_value("B2", f"={this_month_name}!B2 - sumif(J:J,A2,I:I) + sumif(P:P,A2,O:O)")
     nm.update_value("B3", f"={this_month_name}!B3 - sumif(J:J,A3,I:I) + sumif(P:P,A3,O:O)")
     nm.update_value("B4", f"={this_month_name}!B4 - sumif(J:J,A4,I:I) + sumif(P:P,A4,O:O)")
     nm.update_value("B6", f"={this_month_name}!B6 - sumif(J:J,A6,I:I) + sumif(P:P,A6,O:O)")
     nm.update_value("B7", f"={this_month_name}!B7 - sumif(J:J,A7,I:I) + sumif(P:P,A7,O:O)")
-    nm.update_value(
-        "B30",
-        f'={this_month_name}!B30+sumifs(O:O,R:R,CONCATENATE(A30," ",$A$29))'
-        f'-sumifs(I:I,L:L,CONCATENATE(A30," ",$A$29))',
-    )
+    nm.update_value("B8", f"={this_month_name}!B8 - sumif(J:J,A8,I:I) + sumif(P:P,A8,O:O)")
+
+    # Update fun funds
     nm.update_value(
         "B31",
-        f'={this_month_name}!B31+sumifs(O:O,R:R,CONCATENATE(A31," ",$A$29))'
-        f'-sumifs(I:I,L:L,CONCATENATE(A31," ",$A$29))',
+        f'={this_month_name}!B31+sumifs(O:O,R:R,CONCATENATE(A31," ",$A$30))'
+        f'-sumifs(I:I,L:L,CONCATENATE(A31," ",$A$30))',
     )
-    nm.update_value("B33", f'={this_month_name}!B33-sumifs(O:O,R:R,"Kareena loan payment")')
-    nm.update_value("B34", f'={this_month_name}!B34-sumifs(O:O,R:R,"Jenn and AJ loan payment")')
     nm.update_value(
-        "B35",
-        f"=round(({this_month_name}!B35*1.003333)+"
-        'sumifs(O:O,R:R,"Dad loan")-sumifs(I:I,L:L,"Dad loan"),2)',
+        "B32",
+        f'={this_month_name}!B32+sumifs(O:O,R:R,CONCATENATE(A32," ",$A$30))'
+        f'-sumifs(I:I,L:L,CONCATENATE(A32," ",$A$30))',
+    )
+
+    # Update misc loan balances
+    nm.update_value("B34", f'={this_month_name}!B34-sumifs(O:O,R:R,"Kareena loan payment")')
+    nm.update_value("B35", f'={this_month_name}!B35-sumifs(O:O,R:R,"Jenn and AJ loan payment")')
+    nm.update_value(
+        "B36", f'={this_month_name}!B36+sumifs(O:O,R:R,"Dad loan")-sumifs(I:I,L:L,"Dad loan")'
     )
 
     overview = ss.worksheet_by_title("Overview")
