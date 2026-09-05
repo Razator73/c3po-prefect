@@ -614,7 +614,7 @@ def send_budget_summary() -> None:
     def _val(row: int, col: int) -> str:
         return data[row][col] if len(data) > row and len(data[row]) > col else "0"
 
-    data = month_sheet.get_values("A10", "E24", returnas="matrix")
+    data = month_sheet.get_values("A11", "E25", returnas="matrix")
     spent = round(float(_val(14, 2).replace("$", "").replace(",", "")), 2)
     earned = round(float(_val(0, 2).replace("$", "").replace(",", "")), 2)
     cash = round(float(month_sheet.get_value("D2").replace("$", "").replace(",", "") or 0), 2)
