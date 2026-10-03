@@ -88,9 +88,8 @@ def fetch_collection_links(
         if not href or not href.endswith(f"collection={col_id}") or href in seen:
             continue
         parts = a.text.split("\n")
-        title = next((p for p in parts if "reacting" in p.lower()), None)
-        if title:
-            seen[href] = (title, href)
+        if parts[0] == "Google Docs":
+            seen[href] = (parts[1], href)
     post_links = list(seen.values())[::-1]
     logger.info(f"Found {len(post_links)} posts")
 
