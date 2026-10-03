@@ -88,9 +88,8 @@ def fetch_collection_links(
         if not href or not href.endswith(f"collection={col_id}") or href in seen:
             continue
         parts = a.text.split("\n")
-        title = next((p for p in parts if "reacting" in p.lower()), None)
-        if title:
-            seen[href] = (title, href)
+        if parts[0] == "Google Docs":
+            seen[href] = (parts[1], href)
     post_links = list(seen.values())[::-1]
     logger.info(f"Found {len(post_links)} posts")
 
@@ -149,7 +148,7 @@ def download_posts(col_name: str, posts: list[tuple[Path, str]]) -> None:
 @flow(name="scrape-patreon", on_failure=[discord_failure_hook])
 def scrape_patreon() -> None:
     logger = get_run_logger()
-    download_cols = ["Avatar The Last Airbender", "Witch Hat Atelier"]
+    download_cols = ["Avatar The Last Airbender"]
 
     chrome_binary = _find_chrome_binary()
     chrome_version = _get_chrome_version(chrome_binary) if chrome_binary else None
