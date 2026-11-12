@@ -152,8 +152,8 @@ def scrape_patreon() -> None:
     download_cols = ["Avatar The Last Airbender"]
     error_path = Path(os.environ["PATREON_DOWNLOAD_PATH"]) / "error_screenshots"
     error_path.mkdir(exist_ok=True)
-    profile_dir = Path(os.environ["PATREON_DOWNLOAD_PATH"]) / ".chrome-profile"
-    profile_dir.mkdir(exist_ok=True)
+    profile_dir = Path("/opt/c3po/state/patreon-chrome-profile")
+    profile_dir.mkdir(parents=True, exist_ok=True)
 
     chrome_binary = _find_chrome_binary()
     chrome_version = _get_chrome_version(chrome_binary) if chrome_binary else None
