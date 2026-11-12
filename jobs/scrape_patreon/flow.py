@@ -4,6 +4,7 @@ import re
 import shutil
 import subprocess
 import time
+from logging import Logger, LoggerAdapter
 from pathlib import Path
 
 import gdown
@@ -24,6 +25,15 @@ _CHROME_CANDIDATE_PATHS = [
     "/usr/bin/chromium",
     "/snap/bin/chromium",
 ]
+
+CHROME_PROFILE_DIR = Path("/opt/c3po/state/patreon-chrome-profile")
+# Cookie that indicates a logged-in Patreon session. Verify against the
+# profile's Default/Cookies db if the "already logged in" check never passes.
+SESSION_COOKIE = "session_id"
+
+
+class PatreonVerificationRequired(RuntimeError):
+    """Cloudflare challenge appeared; the saved session needs a manual refresh."""
 
 
 def _find_chrome_binary() -> str | None:
@@ -57,6 +67,65 @@ def _download_path(name: str) -> Path:
 def _remove_part_files(folder: Path) -> None:
     for part_file in folder.glob("*.part"):
         part_file.unlink()
+
+
+def _page_state(driver: uc.Chrome) -> str | None:
+    """Return 'challenge', 'login', 'logged_in', or None if still loading."""
+    try:
+        if (
+            "just a moment" in driver.title.lower()
+            or "performing security verification" in driver.page_source.lower()
+        ):
+            return "challenge"
+        if driver.find_elements(By.NAME, "email"):
+            return "login"
+        url = driver.current_url
+        if "/login" not in url and driver.get_cookie(SESSION_COOKIE):
+            return "logged_in"
+    except Exception:
+        pass
+    return None
+
+
+def _ensure_logged_in(driver: uc.Chrome, logger: LoggerAdapter[Logger]) -> None:
+    """Reuse the saved session if valid; otherwise log in. Fail on Cloudflare challenge."""
+    wait = WebDriverWait(driver, 30)
+    driver.get("https://www.patreon.com/home")
+
+    state = wait.until(lambda d: _page_state(d))
+    if state == "challenge":
+        raise PatreonVerificationRequired(
+            "Cloudflare verification appeared. Refresh the Chrome profile manually."
+        )
+    if state == "logged_in":
+        logger.info("Existing Patreon session is valid, skipping login")
+        return
+
+    logger.info("Not logged in, logging in")
+    email_element = wait.until(EC.element_to_be_clickable((By.NAME, "email")))
+    email_element.send_keys(os.environ["PATREON_USERNAME"])
+    email_element.submit()
+    # Patreon's login is a two-step form: enter email, submit, then the
+    # password field renders in. Wait for each field to be interactable
+    # rather than relying on fixed sleeps.
+    password_element = wait.until(EC.element_to_be_clickable((By.NAME, "current-password")))
+    password_element.send_keys(os.environ["PATREON_PASSWORD"])
+    password_element.submit()
+
+    try:
+        state = WebDriverWait(driver, 30).until(
+            lambda d: (s := _page_state(d)) in ("challenge", "logged_in") and s
+        )
+    except Exception:
+        # Login may land on a page without the session cookie visible yet; re-check /home.
+        driver.get("https://www.patreon.com/home")
+        state = _page_state(driver)
+
+    if state == "challenge":
+        raise PatreonVerificationRequired("Cloudflare verification appeared after login.")
+    if state != "logged_in":
+        raise RuntimeError("Login did not complete (check credentials or 2FA)")
+    logger.info("Logged in successfully")
 
 
 @task(cache_policy=NO_CACHE)
@@ -152,8 +221,7 @@ def scrape_patreon() -> None:
     download_cols = ["Avatar The Last Airbender"]
     error_path = Path(os.environ["PATREON_DOWNLOAD_PATH"]) / "error_screenshots"
     error_path.mkdir(exist_ok=True)
-    profile_dir = Path("/opt/c3po/state/patreon-chrome-profile")
-    profile_dir.mkdir(parents=True, exist_ok=True)
+    CHROME_PROFILE_DIR.mkdir(parents=True, exist_ok=True)
 
     chrome_binary = _find_chrome_binary()
     chrome_version = _get_chrome_version(chrome_binary) if chrome_binary else None
@@ -167,7 +235,6 @@ def scrape_patreon() -> None:
     options.add_argument("--disable-background-networking")
     options.add_argument("--disable-sync")
     options.add_argument("--no-first-run")
-    options.add_argument(f"--user-data-dir={profile_dir}")
     with Display(visible=False):
         # NOTE: do not use uc.Chrome as a context manager. undetected-chromedriver
         # 3.5.5's __exit__ restarts the driver service and opens a *new* session
@@ -178,22 +245,11 @@ def scrape_patreon() -> None:
             subprocess=True,
             version_main=chrome_version,
             browser_executable_path=chrome_binary,
+            user_data_dir=str(CHROME_PROFILE_DIR),
             options=options,
         )
         try:
-            wait = WebDriverWait(driver, 30)
-            driver.get("https://www.patreon.com/login")
-            # Patreon's login is a two-step form: enter email, submit, then the
-            # password field renders in. Wait for each field to be interactable
-            # rather than relying on fixed sleeps, which race the page render and
-            # raise ElementNotInteractableException.
-            email_element = wait.until(EC.element_to_be_clickable((By.NAME, "email")))
-            email_element.send_keys(os.environ["PATREON_USERNAME"])
-            email_element.submit()
-            password_element = wait.until(EC.element_to_be_clickable((By.NAME, "current-password")))
-            password_element.send_keys(os.environ["PATREON_PASSWORD"])
-            password_element.submit()
-            time.sleep(2)
+            _ensure_logged_in(driver, logger)
 
             driver.get("https://www.patreon.com/c/omariorpg/collections")
             time.sleep(10)
