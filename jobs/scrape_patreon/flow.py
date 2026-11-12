@@ -1,3 +1,4 @@
+import datetime as dt
 import os
 import re
 import shutil
@@ -149,6 +150,8 @@ def download_posts(col_name: str, posts: list[tuple[Path, str]]) -> None:
 def scrape_patreon() -> None:
     logger = get_run_logger()
     download_cols = ["Avatar The Last Airbender"]
+    error_path = Path(os.environ["PATREON_DOWNLOAD_PATH"]) / "error_screenshots"
+    error_path.mkdir(exist_ok=True)
 
     chrome_binary = _find_chrome_binary()
     chrome_version = _get_chrome_version(chrome_binary) if chrome_binary else None
@@ -242,6 +245,9 @@ def scrape_patreon() -> None:
                     col_data["url"],
                 )
                 download_posts(col_data["name"], posts)
+        except Exception:
+            driver.save_screenshot(error_path / f"{dt.datetime.now():%Y%m%d_%H%M%S}")
+            raise
         finally:
             driver.quit()
 
