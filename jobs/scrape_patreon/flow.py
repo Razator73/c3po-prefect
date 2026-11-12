@@ -249,7 +249,7 @@ def scrape_patreon() -> None:
                 )
                 download_posts(col_data["name"], posts)
         except Exception:
-            driver.save_screenshot(error_path / f"{dt.datetime.now():%Y%m%d_%H%M%S}")
+            driver.save_screenshot(error_path / f"{dt.datetime.now():%Y%m%d_%H%M%S}.png")
             raise
         finally:
             driver.quit()
