@@ -26,7 +26,9 @@ _CHROME_CANDIDATE_PATHS = [
     "/snap/bin/chromium",
 ]
 
-CHROME_PROFILE_DIR = Path("/opt/c3po/state/patreon-chrome-profile")
+CHROME_PROFILE_DIR = Path(
+    os.environ.get("PATREON_CHROME_PROFILE", "/opt/c3po/state/patreon-chrome-profile")
+)
 # Cookie that indicates a logged-in Patreon session. Verify against the
 # profile's Default/Cookies db if the "already logged in" check never passes.
 SESSION_COOKIE = "session_id"
