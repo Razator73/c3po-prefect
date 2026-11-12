@@ -292,7 +292,7 @@ def scrape_patreon() -> None:
                             "url": col_link.get_property("href"),
                         }
                     except Exception:
-                        logger.warning(f"Could not parse {wrapper}")
+                        logger.warning(f"Could not parse {wrapper.text}")
                         raise
                 except Exception as e:
                     logger.warning(f"Failed to parse collection link: {e}")
