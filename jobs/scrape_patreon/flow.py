@@ -93,6 +93,7 @@ def _ensure_logged_in(driver: uc.Chrome, logger: LoggerAdapter[Logger]) -> None:
     """Reuse the saved session if valid; otherwise log in. Fail on Cloudflare challenge."""
     wait = WebDriverWait(driver, 30)
     driver.get("https://www.patreon.com/home")
+    time.sleep(10)
 
     state = wait.until(lambda d: _page_state(d))
     if state == "challenge":
@@ -276,19 +277,23 @@ def scrape_patreon() -> None:
                         By.XPATH,
                         "./ancestor::div[.//p[@data-tag='box-collection-num-post']][1]",
                     )
-                    col_count_str = wrapper.find_element(
-                        By.CSS_SELECTOR, "p[data-tag='box-collection-num-post']"
-                    ).text.strip()
-                    col_name = col_link.text.strip()
-                    if not col_name:
-                        col_name = wrapper.find_element(
-                            By.CSS_SELECTOR, "[data-tag='box-collection-title']"
+                    try:
+                        col_count_str = wrapper.find_element(
+                            By.CSS_SELECTOR, "p[data-tag='box-collection-num-post']"
                         ).text.strip()
-                    collection_links[col_name] = {
-                        "name": col_name,
-                        "count": int(col_count_str),
-                        "url": col_link.get_property("href"),
-                    }
+                        col_name = col_link.text.strip()
+                        if not col_name:
+                            col_name = wrapper.find_element(
+                                By.CSS_SELECTOR, "[data-tag='box-collection-title']"
+                            ).text.strip()
+                        collection_links[col_name] = {
+                            "name": col_name,
+                            "count": int(col_count_str),
+                            "url": col_link.get_property("href"),
+                        }
+                    except Exception:
+                        logger.warning(f"Could not parse {wrapper.text}")
+                        raise
                 except Exception as e:
                     logger.warning(f"Failed to parse collection link: {e}")
 
