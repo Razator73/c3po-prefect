@@ -152,6 +152,8 @@ def scrape_patreon() -> None:
     download_cols = ["Avatar The Last Airbender"]
     error_path = Path(os.environ["PATREON_DOWNLOAD_PATH"]) / "error_screenshots"
     error_path.mkdir(exist_ok=True)
+    profile_dir = Path(os.environ["PATREON_DOWNLOAD_PATH"]) / ".chrome-profile"
+    profile_dir.mkdir(exist_ok=True)
 
     chrome_binary = _find_chrome_binary()
     chrome_version = _get_chrome_version(chrome_binary) if chrome_binary else None
@@ -165,6 +167,7 @@ def scrape_patreon() -> None:
     options.add_argument("--disable-background-networking")
     options.add_argument("--disable-sync")
     options.add_argument("--no-first-run")
+    options.add_argument(f"--user-data-dir={profile_dir}")
     with Display(visible=False):
         # NOTE: do not use uc.Chrome as a context manager. undetected-chromedriver
         # 3.5.5's __exit__ restarts the driver service and opens a *new* session
