@@ -131,6 +131,30 @@ def _ensure_logged_in(driver: uc.Chrome, logger: LoggerAdapter[Logger]) -> None:
     logger.info("Logged in successfully")
 
 
+def _clear_profile_caches() -> None:
+    for name in ("Singleton*",):
+        for f in CHROME_PROFILE_DIR.glob(name):
+            f.unlink(missing_ok=True)
+    for rel in ("Default/Cache", "Default/Code Cache", "GrShaderCache", "ShaderCache"):
+        shutil.rmtree(CHROME_PROFILE_DIR / rel, ignore_errors=True)
+
+
+def _cleanup_screenshots(folder: Path, keep: int = 5) -> None:
+    """Keep the `keep` newest screenshots per suffix; delete the rest."""
+    groups: dict[str, list[Path]] = {}
+    _screenshot_re = re.compile(r"^\d{8}_\d{6}(?P<suffix>.*)\.png$")
+    for path in folder.glob("*.png"):
+        match = _screenshot_re.match(path.name)
+        if match:
+            groups.setdefault(match["suffix"], []).append(path)
+
+    for files in groups.values():
+        # The timestamp prefix sorts chronologically, so newest-first is a reverse name sort
+        files.sort(key=lambda p: p.name, reverse=True)
+        for old in files[keep:]:
+            old.unlink(missing_ok=True)
+
+
 @task(cache_policy=NO_CACHE)
 def fetch_collection_links(
     driver: uc.Chrome, count: int, name: str, url: str
@@ -222,6 +246,7 @@ def download_posts(col_name: str, posts: list[tuple[Path, str]]) -> None:
 def scrape_patreon() -> None:
     logger = get_run_logger()
     download_cols = ["Avatar The Last Airbender"]
+    _clear_profile_caches()
     error_path = Path(os.environ["PATREON_DOWNLOAD_PATH"]) / "error_screenshots"
     error_path.mkdir(exist_ok=True)
     CHROME_PROFILE_DIR.mkdir(parents=True, exist_ok=True)
@@ -251,6 +276,7 @@ def scrape_patreon() -> None:
             user_data_dir=str(CHROME_PROFILE_DIR),
             options=options,
         )
+        run_timestamp = dt.datetime.now()
         try:
             _ensure_logged_in(driver, logger)
 
@@ -271,6 +297,9 @@ def scrape_patreon() -> None:
                 if str(a.get_property("href")).startswith("https://www.patreon.com/collection/")
             ]
             collection_links: dict[str, dict[str, str | int]] = {}
+            driver.save_screenshot(
+                error_path / f"{run_timestamp:%Y%m%d_%H%M%S}_collections_start.png"
+            )
             for col_link in collection_a_tags:
                 try:
                     wrapper = col_link.find_element(
@@ -296,6 +325,9 @@ def scrape_patreon() -> None:
                         raise
                 except Exception as e:
                     logger.warning(f"Failed to parse collection link: {e}")
+            driver.save_screenshot(
+                error_path / f"{run_timestamp:%Y%m%d_%H%M%S}_collections_end.png"
+            )
 
             logger.info(f"Collections found: {list(collection_links.keys())}")
 
@@ -312,10 +344,14 @@ def scrape_patreon() -> None:
                 )
                 download_posts(col_data["name"], posts)
         except Exception:
-            driver.save_screenshot(error_path / f"{dt.datetime.now():%Y%m%d_%H%M%S}.png")
+            driver.save_screenshot(error_path / f"{run_timestamp:%Y%m%d_%H%M%S}_error.png")
             raise
         finally:
             driver.quit()
+            try:
+                _cleanup_screenshots(error_path)
+            except Exception as e:
+                logger.warning(f"Screenshot cleanup failed: {e}")
 
 
 if __name__ == "__main__":
